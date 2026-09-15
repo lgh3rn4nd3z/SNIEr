@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, send_file
 from flask_cors import CORS
-import pyodbc
+import pymssql
 import os
 
 app = Flask(__name__)
@@ -18,8 +18,12 @@ DB_CONFIG = {
 }
 
 def get_connection():
-    conn_str = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={DB_CONFIG['server']};DATABASE={DB_CONFIG['database']};UID={DB_CONFIG['username']};PWD={DB_CONFIG['password']}"
-    return pyodbc.connect(conn_str)
+    return pymssql.connect(
+        server=DB_CONFIG['server'],
+        user=DB_CONFIG['username'],
+        password=DB_CONFIG['password'],
+        database=DB_CONFIG['database']
+    )
 
 @app.route('/')
 def index():
@@ -92,7 +96,7 @@ def get_metadatos_by_serie(serie_id):
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM PLADESHI.Metadatos WHERE SerieId = ?', serie_id)
+        cursor.execute('SELECT * FROM PLADESHI.Metadatos WHERE SerieId = %s', (serie_id,))
         rows = [{'MetadatoId': row[0], 'SerieId': row[1], 'Campo': row[2], 'Valor': row[3]} for row in cursor.fetchall()]
         conn.close()
         return jsonify(rows)
@@ -163,9 +167,9 @@ def get_estructura_utiles():
             cursor.execute('''
                 SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE
                 FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE TABLE_SCHEMA = 'utiles' AND TABLE_NAME = ?
+                WHERE TABLE_SCHEMA = 'utiles' AND TABLE_NAME = %s
                 ORDER BY ORDINAL_POSITION
-            ''', tabla)
+            ''', (tabla,))
 
             columnas_raw = cursor.fetchall()
 
@@ -179,8 +183,8 @@ def get_estructura_utiles():
                     AND tc.TABLE_NAME = ku.TABLE_NAME
                 WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
                     AND tc.TABLE_SCHEMA = 'utiles'
-                    AND tc.TABLE_NAME = ?
-            ''', tabla)
+                    AND tc.TABLE_NAME = %s
+            ''', (tabla,))
             pks = [row[0] for row in cursor.fetchall()]
 
             # Obtener FKs
@@ -192,8 +196,8 @@ def get_estructura_utiles():
                 FROM sys.foreign_key_columns fc
                 JOIN sys.tables t ON fc.parent_object_id = t.object_id
                 JOIN sys.schemas s ON t.schema_id = s.schema_id
-                WHERE s.name = 'utiles' AND t.name = ?
-            ''', tabla)
+                WHERE s.name = 'utiles' AND t.name = %s
+            ''', (tabla,))
             fks = {row[0]: {'tabla': row[1], 'columna': row[2]} for row in cursor.fetchall()}
 
             columnas = []
