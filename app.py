@@ -29,6 +29,16 @@ def get_connection():
 def index():
     return send_file('PLADESHI.html')
 
+@app.route('/api/ip')
+def get_ip():
+    """Muestra la IP de salida del servidor"""
+    import urllib.request
+    try:
+        external_ip = urllib.request.urlopen('https://api.ipify.org').read().decode('utf8')
+        return jsonify({'ip': external_ip})
+    except:
+        return jsonify({'error': 'No se pudo obtener la IP'}), 500
+
 @app.route('/PLADESHI_ER.html')
 def pladeshi_er():
     return send_file('PLADESHI_ER.html')
