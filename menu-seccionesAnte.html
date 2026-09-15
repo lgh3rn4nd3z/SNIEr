@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNIEr - Sistema Nacional de Información Energética</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colores oficiales del Gobierno de México */
+            --gob-guinda: #691C32;
+            --gob-guinda-dark: #4a1423;
+            --gob-guinda-light: #8B2346;
+            --gob-dorado: #BC955C;
+            --gob-dorado-light: #D4AF7A;
+            --gob-verde: #235B4E;
+            --gob-verde-light: #2D7366;
+            --gob-blanco: #FFFFFF;
+            --gob-gris-claro: #F5F5F5;
+            --gob-gris: #6D6D6D;
+            --gob-negro: #1A1A1A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--gob-gris-claro);
+            min-height: 100vh;
+        }
+
+        /* Header Gobierno */
+        .gob-header {
+            background-color: var(--gob-guinda);
+            padding: 0;
+        }
+
+        .gob-header-top {
+            background-color: var(--gob-guinda-dark);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gob-header-top a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .gob-header-top a:hover {
+            opacity: 1;
+        }
+
+        .gob-header-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gob-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gob-logo-img {
+            height: 50px;
+        }
+
+        .gob-logo-text {
+            color: var(--gob-blanco);
+            font-size: 0.9rem;
+            line-height: 1.3;
+            border-left: 2px solid var(--gob-dorado);
+            padding-left: 15px;
+        }
+
+        .gob-logo-text strong {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .gob-nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        .gob-nav a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .gob-nav a:hover {
+            border-bottom-color: var(--gob-dorado);
+        }
+
+        /* Barra dorada */
+        .gob-gold-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--gob-dorado) 0%, var(--gob-dorado-light) 50%, var(--gob-dorado) 100%);
+        }
+
+        /* Título de la página */
+        .page-title {
+            background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .page-title h1 {
+            color: var(--gob-blanco);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .page-title .article-reference {
+            max-width: 1000px;
+            margin: 20px auto -40px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            background: var(--gob-blanco);
+            padding: 25px 35px;
+            border-radius: 12px;
+            border-left: 6px solid var(--gob-dorado);
+            color: var(--gob-negro);
+            text-align: left;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+            transform: translateY(20px);
+        }
+
+        .page-title .article-reference strong {
+            font-size: 1.2rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            color: var(--gob-blanco);
+            padding: 6px 16px;
+            border-radius: 6px;
+            margin-right: 10px;
+            box-shadow: 0 3px 8px rgba(105, 28, 50, 0.3);
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 30px 30px;
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section {
+            background: var(--gob-blanco);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px;
+            cursor: pointer;
+            background: var(--gob-blanco);
+            transition: all 0.3s ease;
+            user-select: none;
+            border-left: 4px solid var(--gob-guinda);
+        }
+
+        .section-header:hover {
+            background: #fafafa;
+        }
+
+        .section.active .section-header {
+            background: var(--gob-guinda);
+            border-left-color: var(--gob-dorado);
+        }
+
+        .section.active .section-title {
+            color: var(--gob-blanco);
+        }
+
+        .section.active .section-arrow {
+            color: var(--gob-blanco);
+        }
+
+        .section.active .section-badge {
+            background: var(--gob-dorado);
+            color: var(--gob-guinda-dark);
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+        }
+
+        .section.active .section-icon {
+            background: var(--gob-dorado);
+            color: var(--gob-guinda-dark);
+        }
+
+        .section-title {
+            flex: 1;
+            color: var(--gob-negro);
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .section-arrow {
+            color: var(--gob-guinda);
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            margin-left: 15px;
+        }
+
+        .section.active .section-arrow {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .section.active .section-content {
+            max-height: 5000px;
+        }
+
+        .cards-container {
+            padding: 20px 24px 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            background: #f9f9f9;
+        }
+
+        /* Theme Group */
+        .theme-group {
+            margin-bottom: 0;
+        }
+
+        .theme-header {
+            display: flex;
+            align-items: center;
+            padding: 14px 24px;
+            background: linear-gradient(90deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 14px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--gob-blanco);
+        }
+
+        .theme-title {
+            color: var(--gob-blanco);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--gob-blanco);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            text-decoration: none;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(105, 28, 50, 0.15);
+            border-color: var(--gob-guinda);
+        }
+
+        .card-image {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+        }
+
+        .card-image i {
+            color: var(--gob-blanco);
+            opacity: 0.9;
+        }
+
+        /* Variaciones de color para las tarjetas */
+        .card-verde .card-image { background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%); }
+        .card-dorado .card-image { background: linear-gradient(135deg, #8B6914 0%, var(--gob-dorado) 100%); }
+        .card-guinda .card-image { background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%); }
+
+        /* Imágenes por categoría */
+        .card-image {
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.7) 0%, rgba(139, 35, 70, 0.5) 100%);
+            z-index: 1;
+        }
+
+        .card-image i {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Categoría: Hidrocarburos */
+        .card-hidrocarburos .card-image {
+            background-image: url('https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400&q=80');
+        }
+        .card-hidrocarburos .card-image::before {
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.75) 0%, rgba(139, 35, 70, 0.6) 100%);
+        }
+
+        /* Categoría: Sector Eléctrico */
+        .card-electrico .card-image {
+            background-image: url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&q=80');
+        }
+        .card-electrico .card-image::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.75) 0%, rgba(45, 115, 102, 0.6) 100%);
+        }
+
+        /* Categoría: Energías Renovables */
+        .card-renovables .card-image {
+            background-image: url('https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80');
+        }
+        .card-renovables .card-image::before {
+            background: linear-gradient(135deg, rgba(139, 105, 20, 0.75) 0%, rgba(188, 149, 92, 0.6) 100%);
+        }
+
+        /* Categoría: Balance Energético */
+        .card-balance .card-image {
+            background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80');
+        }
+        .card-balance .card-image::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.8) 0%, rgba(45, 115, 102, 0.65) 100%);
+        }
+
+        /* Categoría: Mercado Energético */
+        .card-mercado .card-image {
+            background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&q=80');
+        }
+        .card-mercado .card-image::before {
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.8) 0%, rgba(139, 35, 70, 0.65) 100%);
+        }
+
+        /* Categoría: Innovación y Proyectos */
+        .card-innovacion .card-image {
+            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80');
+        }
+        .card-innovacion .card-image::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.8) 0%, rgba(45, 115, 102, 0.65) 100%);
+        }
+
+        /* Categoría: Planeación y Escenarios */
+        .card-planeacion .card-image {
+            background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80');
+        }
+        .card-planeacion .card-image::before {
+            background: linear-gradient(135deg, rgba(139, 105, 20, 0.8) 0%, rgba(188, 149, 92, 0.65) 100%);
+        }
+
+        /* Categoría: Certificados */
+        .card-certificados .card-image {
+            background-image: url('https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=400&q=80');
+        }
+        .card-certificados .card-image::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.75) 0%, rgba(45, 115, 102, 0.6) 100%);
+        }
+
+        .card-body {
+            padding: 14px 16px;
+        }
+
+        .card-title {
+            color: var(--gob-negro);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .card-subtitle {
+            color: var(--gob-gris);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-subtitle i {
+            color: var(--gob-guinda);
+            font-size: 0.7rem;
+        }
+
+        .card-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .card-disabled .card-subtitle {
+            color: #999;
+        }
+
+        /* No link indicator */
+        .no-link {
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        /* Badge count */
+        .section-badge {
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-left: 15px;
+            font-weight: 600;
+        }
+
+        /* Footer Gobierno */
+        .gob-footer {
+            background: var(--gob-guinda-dark);
+            padding: 40px 30px 20px;
+            margin-top: 40px;
+        }
+
+        .gob-footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .gob-footer-section h4 {
+            color: var(--gob-dorado);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gob-footer-section p,
+        .gob-footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            text-decoration: none;
+        }
+
+        .gob-footer-section a:hover {
+            color: var(--gob-dorado);
+        }
+
+        .gob-footer-bottom {
+            max-width: 1400px;
+            margin: 30px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .gob-footer-bottom p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gob-header-main {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .gob-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .section-header {
+                padding: 14px 16px;
+            }
+
+            .section-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 0.85rem;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+        }
+
+        /* Animación de carga */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.05s; }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.15s; }
+        .section:nth-child(4) { animation-delay: 0.2s; }
+        .section:nth-child(5) { animation-delay: 0.25s; }
+        .section:nth-child(6) { animation-delay: 0.3s; }
+        .section:nth-child(7) { animation-delay: 0.35s; }
+    </style>
+</head>
+<body>
+    <!-- Header Gobierno de México -->
+    <header class="gob-header">
+        <div class="gob-header-top">
+            <a href="#">gob.mx</a>
+            <a href="#">Trámites</a>
+            <a href="#">Gobierno</a>
+            <a href="#">Contacto</a>
+        </div>
+        <div class="gob-header-main">
+            <div class="gob-logo">
+                <svg class="gob-logo-img" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="10" y="35" fill="#BC955C" font-family="Montserrat" font-weight="700" font-size="28">GOB</text>
+                    <text x="75" y="35" fill="#FFFFFF" font-family="Montserrat" font-weight="300" font-size="28">.MX</text>
+                </svg>
+                <div class="gob-logo-text">
+                    <strong>Secretaría de Energía</strong>
+                    Sistema Nacional de Información Energética
+                </div>
+            </div>
+            <nav class="gob-nav">
+                <a href="https://qa-ti.energia.gob.mx/snien/public/inicio">Inicio</a>
+            </nav>
+        </div>
+    </header>
+    <div class="gob-gold-bar"></div>
+
+    <!-- Título de la página -->
+    <div class="page-title">
+        <h1><i class="fas fa-database"></i> Contenido del Sistema de Información</h1>
+        <p class="article-reference" style="text-align: center; font-weight: bold;">Reglamento de la ley de planeación y transición energética</p>
+        <p class="article-reference"><strong>Artículo 69.</strong> El Sistema Nacional de Información Energética debe concentrar, integrar, organizar, actualizar y, en su caso, difundir los registros de información</p>
+    </div>
+
+    <div class="container">
+        <div class="accordion">
+            <!-- Sección I -->
+            <div class="section" data-section="1">
+                <div class="section-header" onclick="toggleSection(1)">
+                    <div class="section-icon">
+                        <i class="fas fa-oil-well"></i>
+                    </div>
+                    <div class="section-title">
+                        I. El inventario y el potencial de los recursos renovables, así como la estimación de las Reservas, la relación entre producción y Reservas y los Recursos Prospectivos y contingentes de Hidrocarburos
+                    </div>
+                    <span class="section-badge">22</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <!-- Tema 1.1 Infraestructura de hidrocarburos -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-industry"></i></div>
+                            <div class="theme-title">1.1 Infraestructura de hidrocarburos</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/exploracion" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-search-location"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.1 Exploración</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/produccion" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-oil-can"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.2 Producción</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/refinacion" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-flask"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.3 Refinación</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/procesamiento-gas" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-burn"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.4 Procesamiento de gas natural</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/almacenamiento" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-warehouse"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.5 Almacenamiento</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/transporte" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-truck-moving"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.6 Transporte</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/distribucion" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-project-diagram"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.7 Distribución</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/comercializacion" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-handshake"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.8 Comercialización</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/comercio-exterior" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-globe-americas"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.1.9 Comercio exterior</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                             <a href="https://qa-ti.energia.gob.mx/snien/public/diagnostico-energetico/hidrocarburos/reservas" target="_blank" class="card card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-globe-americas"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.10 Reservas</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a  class="card card-disabled card-hidrocarburos">
+                                <div class="card-image"><i class="fas fa-globe-americas"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.11 Proespectivas</div>
+                                    <div class="card-subtitle"><i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span></div>
+                                </div>
+                            </a>
+                            <a  class="card card-disabled card-hidrocarburos">
+                                 <div class="card-image"><i class="fas fa-globe-americas"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.12 Contingentes</div>
+                                    <div class="card-subtitle"><i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span></div>
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <!-- Tema 1.2 Infraestructura del sector eléctrico -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="theme-title">1.2 Infraestructura del sector eléctrico</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/centrales-sen" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-building"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.2.1 Centrales eléctricas del SEN</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/red-transmision" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-network-wired"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.2.2 Red Nacional de Transmisión</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/redes-distribucion" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-sitemap"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.2.3 Redes Generales de Distribución</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/centrales-no-interconectadas" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-plug"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.2.4 Centrales no interconectadas</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/generacion-distribuida" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-solar-panel"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.2.5 Generación Distribuida</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <div class="card card-disabled card-electrico">
+                                <div class="card-image"><i class="fas fa-charging-station"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.2.6 Subestaciones eléctricas</div>
+                                    <div class="card-subtitle"><i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tema 1.3 Otra Infraestructura -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-leaf"></i></div>
+                            <div class="theme-title">1.3 Otra Infraestructura</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/calentadores-solares" target="_blank" class="card card-renovables">
+                                <div class="card-image"><i class="fas fa-sun"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.3.1 Calentadores solares de agua</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/estufas-lena" target="_blank" class="card card-renovables">
+                                <div class="card-image"><i class="fas fa-fire"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.3.2 Estufas eficientes de leña</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/sistemas-geotermicos" target="_blank" class="card card-renovables">
+                                <div class="card-image"><i class="fas fa-mountain"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.3.3 Sistemas geotérmicos de usos diversos</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/sistemas-biomasa" target="_blank" class="card card-renovables">
+                                <div class="card-image"><i class="fas fa-seedling"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">1.3.4 Sistemas térmicos de biomasa</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección II -->
+            <div class="section" data-section="2">
+                <div class="section-header" onclick="toggleSection(2)">
+                    <div class="section-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="section-title">
+                        II. Registros con información estadística sobre
+                    </div>
+                    <span class="section-badge">33</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <!-- Tema II.a -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-balance-scale"></i></div>
+                            <div class="theme-title">II.a) El origen y el destino de la energía en los procesos y actividades para su Exploración, Extracción, Refinación, Transporte, almacenamiento, distribución y consumo final</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-nacional" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-history"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Balances históricos</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>                         
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/produccion-primaria" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-chart-pie"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Producción de energía primaria</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/oferta-interna-bruta" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-chart-pie"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Oferta Interna Bruta</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>                            
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/refinacion" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-flask"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Refinación</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/procesamiento-gas" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-burn"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Procesamiento de gas natural</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-nacional" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-burn"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Generación eléctrica</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>                            
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/almacenamiento" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-warehouse"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Almacenamiento</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/transporte-transmision" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-truck-moving"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Transporte y transmisión</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/distribucion" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-project-diagram"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Distribución</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/consumo-final" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-users"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Consumo final</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/aprovechamiento-directo" target="_blank" class="card card-balance">
+                                <div class="card-image"><i class="fas fa-hand-holding-water"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Aprovechamiento directo</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tema II.b -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-store"></i></div>
+                            <div class="theme-title">II.b) La situación del Sistema Energético, incluyendo el Sistema Eléctrico Nacional y el Mercado Eléctrico Mayorista, así como del sector hidrocarburos</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/mem" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-bolt"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Electricidad - MEM</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-mem" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-tags"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Electricidad - Tarifas del MEM</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-usuarios" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-file-invoice-dollar"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Electricidad - Tarifas usuario finales</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" target="_blank" class="card card-certificados">
+                                <div class="card-image"><i class="fas fa-certificate"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Certificados de Energías Limpias</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/gasolina" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-gas-pump"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Gasolina</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/diesel" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-tint"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Diesel</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/gas-natural" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-fire-alt"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Gas natural</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/glp" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-fire"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">GLP</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/otros" target="_blank" class="card card-mercado">
+                                <div class="card-image"><i class="fas fa-ellipsis-h"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Otros</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tema II.c -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-tasks"></i></div>
+                            <div class="theme-title">II.c) El avance en el desarrollo de proyectos, programas y acciones, así como el cumplimiento de estrategias, líneas de acción, indicadores y metas de los Instrumentos de Planeación del Sector Energético</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/innovacion/proyectos-impulsados" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-project-diagram"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Proyectos</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <div class="card card-disabled card-innovacion">
+                                <div class="card-image"><i class="fas fa-clipboard-list"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Programas</div>
+                                    <div class="card-subtitle"><i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span></div>
+                                </div>
+                            </div>
+                            <div class="card card-disabled card-innovacion">
+                                <div class="card-image"><i class="fas fa-chart-line"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Indicadores</div>
+                                    <div class="card-subtitle"><i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span></div>
+                                </div>
+                            </div>
+                            <div class="card card-disabled card-innovacion">
+                                <div class="card-image"><i class="fas fa-bullseye"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Metas de los instrumentos de Planeación</div>
+                                    <div class="card-subtitle"><i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span></div>
+                                </div>
+                            </div>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/instrumentos" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-project-diagram"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Instrumentos de planeación</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>                           
+                        </div>
+                    </div>
+
+                    <!-- Tema II.d -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="theme-title">II.d) La información relevante de proyectos en desarrollo y concluidos en el país orientados a la innovación, desarrollo tecnológico y formación de recursos humanos en materia de Transición Energética e Hidrocarburos</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/innovacion/proyectos-impulsados" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-rocket"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Proyectos impulsados</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/innovacion/convocatorias/fotease" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-bullhorn"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Próximas convocatorias</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/innovacion/imp" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-flask"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">IMP</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/innovacion/ineel" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-bolt"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">INEEL</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/innovacion/inin" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-atom"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">ININ</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                        </div>
+
+                    <!-- Tema II.e -->
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="theme-title">II.e) La información relevante de proyectos en desarrollo y concluidos en el país orientados a la Justicia Energética</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/acceso-electricidad" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-rocket"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Acceso a la electricidad</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/estabilizacion-precios" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-bullhorn"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Estabilización de precios</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/estrategias-programas" target="_blank" class="card card-innovacion">
+                                <div class="card-image"><i class="fas fa-flask"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">Estrategias y programas de justicia energética</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección III -->
+            <div class="section" data-section="3">
+                <div class="section-header" onclick="toggleSection(3)">
+                    <div class="section-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="section-title">
+                        III. La información sobre la Generación Distribuida y en aplicaciones aisladas de la red
+                    </div>
+                    <span class="section-badge">4</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <div class="theme-group">
+                        <div class="theme-header">
+                            <div class="theme-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="theme-title">3.1 Electricidad</div>
+                        </div>
+                        <div class="cards-container">
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/mem" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-building"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">3.1.1 MEM</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-mem" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-network-wired"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">3.1.2 Tarifas del MEM</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-usuarios" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-sitemap"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">3.1.3 Tarifas usuario finales</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                            <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" target="_blank" class="card card-electrico">
+                                <div class="card-image"><i class="fas fa-plug"></i></div>
+                                <div class="card-body">
+                                    <div class="card-title">3.1.4 Certificados de Energías Limpias</div>
+                                    <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección IV -->
+            <div class="section" data-section="4">
+                <div class="section-header" onclick="toggleSection(4)">
+                    <div class="section-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="section-title">
+                        IV. La información en materia de Eficiencia Energética
+                    </div>
+                    <span class="section-badge">7</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <div class="cards-container">
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/refinacion" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-flask"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.4 Refinación</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/procesamiento-gas" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-burn"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.5 Procesamiento de gas natural</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/balance-nacional" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-bolt"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.6 Generación eléctrica</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/almacenamiento" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-warehouse"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.7 Almacenamiento</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/transporte-transmision" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-truck-moving"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.8 Transporte y transmisión</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/balance-energetico/consumo-final" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-project-diagram"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.9 Distribución</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/Distribuci%C3%B3n" target="_blank" class="card card-balance">
+                            <div class="card-image"><i class="fas fa-users"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">2.10 Consumo final</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección V -->
+            <div class="section" data-section="5">
+                <div class="section-header" onclick="toggleSection(5)">
+                    <div class="section-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="section-title">
+                        V. La información sobre los Certificados de Energías Limpias
+                    </div>
+                    <span class="section-badge">1</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <div class="cards-container">
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" target="_blank" class="card card-certificados">
+                            <div class="card-image"><i class="fas fa-award"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">Certificados de Energías Limpias</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección VI -->
+            <div class="section" data-section="6">
+                <div class="section-header" onclick="toggleSection(6)">
+                    <div class="section-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="section-title">
+                        VI. Un catálogo de tecnologías para la generación de energía eléctrica y habilitadoras, que incluya parámetros de operación, técnicos y económicos
+                    </div>
+                    <span class="section-badge">1</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <div class="cards-container">
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/catalogos" target="_blank" class="card card-planeacion">
+                            <div class="card-image"><i class="fas fa-book"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">9.3 Catálogos de tecnologías</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección VII -->
+            <div class="section" data-section="7">
+                <div class="section-header" onclick="toggleSection(7)">
+                    <div class="section-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="section-title">
+                        VII. El escenario de referencia y los escenarios del Sector Energético a mediano y largo plazo, e incluir los ahorros energéticos y la mitigación de emisiones de gases de efecto invernadero asociada a ellos
+                    </div>
+                    <span class="section-badge">1</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+                <div class="section-content">
+                    <div class="cards-container">
+                        <a href="https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/escenarios" target="_blank" class="card card-planeacion">
+                            <div class="card-image"><i class="fas fa-route"></i></div>
+                            <div class="card-body">
+                                <div class="card-title">9.2 Escenarios de referencia y planeación</div>
+                                <div class="card-subtitle"><i class="fas fa-external-link-alt"></i> Ver información</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+ 
+            <!-- Separador visual -->
+            <div style="margin: 30px 0; border-top: 2px dashed #ccc; padding-top: 10px;">
+                <span style="background: #f5f5f5; padding: 5px 15px; color: #666; font-size: 14px; font-weight: 500;">Información Complementaria</span>
+            </div>
+
+            <!-- Sección VIII -->
+            <div class="section" data-section="8">
+                <div class="section-header" onclick="toggleSection(8)">
+                    <div class="section-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <div class="section-title">
+                        Otros insumos internos del sector
+                    </div>
+                    <span class="section-badge">0</span>
+                    <i class="fas fa-chevron-down section-arrow"></i>
+                </div>
+            </div>
+    </div>
+
+    <!-- Footer Gobierno de México -->
+    <footer class="gob-footer">
+        <div class="gob-footer-content">
+            <div class="gob-footer-section">
+                <h4>Enlaces</h4>
+                <p><a href="#">Datos Abiertos</a></p>
+                <p><a href="#">Publicaciones Oficiales</a></p>
+                <p><a href="#">Marco Jurídico</a></p>
+                <p><a href="#">Plataforma Nacional de Transparencia</a></p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>¿Qué es gob.mx?</h4>
+                <p>Es el portal único de trámites, información y participación ciudadana.</p>
+                <p><a href="#">Conoce más sobre el portal</a></p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>Contacto</h4>
+                <p>Secretaría de Energía</p>
+                <p>Insurgentes Sur 890, Col. Del Valle</p>
+                <p>Ciudad de México, C.P. 03100</p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>Síguenos</h4>
+                <p>
+                    <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+                </p>
+                <p>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                </p>
+                <p>
+                    <a href="#"><i class="fab fa-youtube"></i> YouTube</a>
+                </p>
+            </div>
+        </div>
+        <div class="gob-footer-bottom">
+            <p>Sistema Nacional de Información Energética - Secretaría de Energía | Gobierno de México</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleSection(sectionNumber) {
+            const sections = document.querySelectorAll('.section');
+            const clickedSection = document.querySelector(`[data-section="${sectionNumber}"]`);
+
+            // Si la sección clickeada ya está activa, la cerramos
+            if (clickedSection.classList.contains('active')) {
+                clickedSection.classList.remove('active');
+                return;
+            }
+
+            // Cerrar todas las secciones
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Abrir solo la sección clickeada
+            clickedSection.classList.add('active');
+
+            // Scroll suave hacia la sección abierta
+            setTimeout(() => {
+                clickedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1047 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIE - Sistema de Informacion Energetica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colores oficiales del Gobierno de Mexico */
+            --gob-guinda: #691C32;
+            --gob-guinda-dark: #4a1423;
+            --gob-guinda-light: #8B2346;
+            --gob-dorado: #BC955C;
+            --gob-dorado-light: #D4AF7A;
+            --gob-verde: #235B4E;
+            --gob-verde-light: #2D7366;
+            --gob-blanco: #FFFFFF;
+            --gob-gris-claro: #F5F5F5;
+            --gob-gris: #6D6D6D;
+            --gob-negro: #1A1A1A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--gob-gris-claro);
+            min-height: 100vh;
+        }
+
+        /* Header Gobierno */
+        .gob-header {
+            background-color: var(--gob-guinda);
+            padding: 0;
+        }
+
+        .gob-header-top {
+            background-color: var(--gob-guinda-dark);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gob-header-top a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .gob-header-top a:hover {
+            opacity: 1;
+        }
+
+        .gob-header-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gob-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gob-logo-text {
+            color: var(--gob-blanco);
+            font-size: 0.9rem;
+            line-height: 1.3;
+            border-left: 2px solid var(--gob-dorado);
+            padding-left: 15px;
+        }
+
+        .gob-logo-text strong {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Barra dorada */
+        .gob-gold-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--gob-dorado) 0%, var(--gob-dorado-light) 50%, var(--gob-dorado) 100%);
+        }
+
+        /* Titulo de la pagina */
+        .page-title {
+            background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .page-title h1 {
+            color: var(--gob-blanco);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* Resumen total */
+        .summary-card {
+            background: var(--gob-blanco);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--gob-guinda);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .summary-info h2 {
+            color: var(--gob-guinda);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .summary-info p {
+            color: var(--gob-gris);
+            font-size: 0.9rem;
+        }
+
+        .summary-total {
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            color: var(--gob-blanco);
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-total span {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .summary-total small {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Botones de control */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--gob-blanco);
+            color: var(--gob-gris);
+            border: 1px solid #ddd;
+        }
+
+        .btn:hover {
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+            border-color: var(--gob-guinda);
+        }
+
+        .btn-primary {
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+            border-color: var(--gob-guinda);
+        }
+
+        .btn-primary:hover {
+            background: var(--gob-guinda-dark);
+        }
+
+        /* Leyenda */
+        .legend {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: var(--gob-blanco);
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--gob-gris);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-color.tema { background: var(--gob-guinda); }
+        .legend-color.subtema { background: var(--gob-dorado); }
+        .legend-color.derivado { background: var(--gob-verde); }
+
+        /* Arbol */
+        .tree {
+            background: var(--gob-blanco);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .tree-item {
+            margin: 4px 0;
+        }
+
+        .tree-header {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .tree-header:hover {
+            background: rgba(105, 28, 50, 0.05);
+        }
+
+        /* Nivel 1 - Tema */
+        .level-1 > .tree-header {
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.08) 0%, rgba(139, 35, 70, 0.05) 100%);
+            border-left-color: var(--gob-guinda);
+            font-weight: 600;
+        }
+
+        .level-1 > .tree-header:hover {
+            background: rgba(105, 28, 50, 0.12);
+        }
+
+        /* Nivel 2 - Subtema */
+        .level-2 > .tree-header {
+            margin-left: 35px;
+            background: rgba(188, 149, 92, 0.08);
+            border-left-color: var(--gob-dorado);
+        }
+
+        .level-2 > .tree-header:hover {
+            background: rgba(188, 149, 92, 0.15);
+        }
+
+        /* Nivel 3 - Derivado */
+        .level-3 > .tree-header {
+            margin-left: 70px;
+            background: rgba(35, 91, 78, 0.08);
+            border-left-color: var(--gob-verde);
+        }
+
+        .level-3 > .tree-header:hover {
+            background: rgba(35, 91, 78, 0.15);
+        }
+
+        .toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--gob-gris);
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .toggle.expanded {
+            transform: rotate(90deg);
+        }
+
+        .no-children .toggle {
+            visibility: hidden;
+        }
+
+        .name {
+            flex: 1;
+            color: var(--gob-negro);
+            font-size: 0.95rem;
+        }
+
+        .total {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .level-1 .total {
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+        }
+
+        .level-2 .total {
+            background: var(--gob-dorado);
+            color: var(--gob-blanco);
+        }
+
+        .level-3 .total {
+            background: var(--gob-verde);
+            color: var(--gob-blanco);
+        }
+
+        .children {
+            display: none;
+        }
+
+        .children.show {
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gob-guinda-dark);
+            color: var(--gob-blanco);
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--gob-dorado);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gob-header-main {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .summary-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .level-2 > .tree-header {
+                margin-left: 20px;
+            }
+            .level-3 > .tree-header {
+                margin-left: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Gobierno -->
+    <header class="gob-header">
+        <div class="gob-header-top">
+            <a href="#">gob.mx</a>
+            <a href="#">Gobierno</a>
+            <a href="#">Contacto</a>
+        </div>
+        <div class="gob-header-main">
+            <div class="gob-logo">
+                <div class="gob-logo-text">
+                    <strong>Secretaria de Energia</strong>
+                    Sistema Nacional de Informacion Energetica
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="gob-gold-bar"></div>
+
+    <!-- Titulo -->
+    <div class="page-title">
+        <h1><i class="fas fa-sitemap"></i> Sistema de Informacion Energetica</h1>
+        <p>Estructura jerarquica de temas, subtemas y derivados</p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="container">
+        <!-- Resumen -->
+        <div class="summary-card">
+            <div class="summary-info">
+                <h2><i class="fas fa-database"></i> Catalogo SIE</h2>
+                <p>Vista de arbol con totales por cada nivel de la estructura</p>
+            </div>
+            <div class="summary-total">
+                <span>18,445</span>
+                <small>Total de registros</small>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="expandAll()">
+                <i class="fas fa-expand"></i> Expandir Todo
+            </button>
+            <button class="btn" onclick="collapseAll()">
+                <i class="fas fa-compress"></i> Colapsar Todo
+            </button>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color tema"></div>
+                <span>Tema</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color subtema"></div>
+                <span>Subtema</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color derivado"></div>
+                <span>Derivado</span>
+            </div>
+        </div>
+
+        <!-- Arbol -->
+        <div class="tree">
+            <!-- Electricidad -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-bolt"></i> Electricidad</span>
+                    <span class="total">209</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Generacion</span>
+                            <span class="total">158</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">CFE</span>
+                                    <span class="total">87</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Nacional</span>
+                                    <span class="total">51</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Transmision</span>
+                            <span class="total">8</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">CFE</span>
+                                    <span class="total">7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Consumo</span>
+                            <span class="total">43</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">CFE</span>
+                                    <span class="total">4</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Nacional</span>
+                                    <span class="total">7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidrocarburos -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-oil-can"></i> Hidrocarburos</span>
+                    <span class="total">10,795</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Exploracion y Extraccion</span>
+                            <span class="total">777</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Nacional</span>
+                                    <span class="total">356</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">PEMEX</span>
+                                    <span class="total">421</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Transformacion Industrial</span>
+                            <span class="total">656</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">PEMEX</span>
+                                    <span class="total">627</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Transporte, Almacenamiento y Distribucion</span>
+                            <span class="total">7,216</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">PEMEX</span>
+                                    <span class="total">3,075</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Comercio Internacional</span>
+                            <span class="total">357</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Nacional</span>
+                                    <span class="total">13</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">PEMEX</span>
+                                    <span class="total">344</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Precios</span>
+                            <span class="total">78</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">PEMEX</span>
+                                    <span class="total">78</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fuentes Limpias y Renovables de Energia -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-leaf"></i> Fuentes Limpias y Renovables de Energia</span>
+                    <span class="total">24</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Biomasa</span>
+                            <span class="total">13</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Energia Eolica</span>
+                            <span class="total">2</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Geoenergia</span>
+                            <span class="total">2</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Hidroenergia</span>
+                            <span class="total">2</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Nuclear</span>
+                            <span class="total">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fuentes Minerales de Energia -->
+            <div class="tree-item level-1 no-children">
+                <div class="tree-header">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-gem"></i> Fuentes Minerales de Energia</span>
+                    <span class="total">39</span>
+                </div>
+            </div>
+
+            <!-- Estadisticas Energeticas Nacionales -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-chart-bar"></i> Estadisticas Energeticas Nacionales</span>
+                    <span class="total">570</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Balance Nacional de Energia</span>
+                            <span class="total">560</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Indicadores Nacionales</span>
+                                    <span class="total">10</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Oferta Interna Bruta</span>
+                                    <span class="total">37</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Consumo Nacional de Energia</span>
+                                    <span class="total">8</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Sector Transformacion</span>
+                                    <span class="total">24</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Consumo Final</span>
+                                    <span class="total">68</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Balance por producto</span>
+                                    <span class="total">405</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Informacion de Interes Nacional</span>
+                            <span class="total">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prospectivas del Sector -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-chart-line"></i> Prospectivas del Sector</span>
+                    <span class="total">5,586</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Gas LP</span>
+                            <span class="total">430</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Historicos</span>
+                                    <span class="total">326</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Prospectivos</span>
+                                    <span class="total">104</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Gas Natural</span>
+                            <span class="total">1,642</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Historicos</span>
+                                    <span class="total">1,296</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Prospectivos</span>
+                                    <span class="total">337</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Petroliferos</span>
+                            <span class="total">2,492</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Historicos</span>
+                                    <span class="total">1,806</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Prospectivos</span>
+                                    <span class="total">686</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Sector Electrico</span>
+                            <span class="total">224</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Cuadros Prospectivos</span>
+                                    <span class="total">224</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Energias Renovables</span>
+                            <span class="total">794</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anexo Estadistico del Informe de Gobierno -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-file-alt"></i> Anexo Estadistico del Informe de Gobierno</span>
+                    <span class="total">830</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Programas Derivados del PND</span>
+                            <span class="total">207</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Informacion Historica</span>
+                                    <span class="total">207</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Estadistica Nacionales</span>
+                            <span class="total">264</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Sector Hidrocarburos</span>
+                                    <span class="total">204</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Sector Electrico</span>
+                                    <span class="total">260</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Estadistica por Entidad Federativa</span>
+                            <span class="total">70</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Sector Hidrocarburos</span>
+                                    <span class="total">4</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Sector Electrico</span>
+                                    <span class="total">66</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Comparaciones Internacionales</span>
+                            <span class="total">289</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informacion Internacional -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-globe"></i> Informacion Internacional</span>
+                    <span class="total">130</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Documentos</span>
+                            <span class="total">0</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Cuadros Vigentes</span>
+                            <span class="total">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investigacion y Desarrollo -->
+            <div class="tree-item level-1">
+                <div class="tree-header" onclick="toggleChildren(this)">
+                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                    <span class="name"><i class="fas fa-flask"></i> Investigacion y Desarrollo</span>
+                    <span class="total">262</span>
+                </div>
+                <div class="children">
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Recursos Humanos</span>
+                            <span class="total">12</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2 no-children">
+                        <div class="tree-header">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Informe de Actividades</span>
+                            <span class="total">197</span>
+                        </div>
+                    </div>
+                    <div class="tree-item level-2">
+                        <div class="tree-header" onclick="toggleChildren(this)">
+                            <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                            <span class="name">Indicadores de Operacion</span>
+                            <span class="total">40</span>
+                        </div>
+                        <div class="children">
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Proyectos de Investigacion y Desarrollo Tecnologico</span>
+                                    <span class="total">25</span>
+                                </div>
+                            </div>
+                            <div class="tree-item level-3 no-children">
+                                <div class="tree-header">
+                                    <span class="toggle"><i class="fas fa-chevron-right"></i></span>
+                                    <span class="name">Propiedad industrial Intelectual</span>
+                                    <span class="total">15</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Sistema Nacional de Informacion Energetica - Secretaria de Energia</p>
+        <p><a href="#">gob.mx</a></p>
+    </footer>
+
+    <script>
+        function toggleChildren(header) {
+            const parent = header.parentElement;
+            const children = parent.querySelector('.children');
+            const toggle = header.querySelector('.toggle');
+
+            if (children) {
+                children.classList.toggle('show');
+                toggle.classList.toggle('expanded');
+            }
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.children').forEach(el => el.classList.add('show'));
+            document.querySelectorAll('.toggle').forEach(el => el.classList.add('expanded'));
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.children').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.toggle').forEach(el => el.classList.remove('expanded'));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1005 @@
+<meta charset="UTF-8">
+<h2 class="sr-only">Línea del tiempo horizontal del plan de implementación SNIER Fase 1, mostrando las 8 etapas secuenciales y 3 puntos de validación del Consejo del SNIER intercalados entre ellas</h2>
+<style>
+/* Variables y base */
+.tl-wrap{
+  padding:2rem 1rem 1.5rem;
+  font-family:var(--font-sans, 'Segoe UI', system-ui, sans-serif);
+  background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.tl-wrap::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #691C32, #235B4E, #BC955C);
+  border-radius: 16px 16px 0 0;
+}
+
+/* Título y subtítulo */
+.tl-header{
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.tl-title{
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.tl-subtitle{
+  font-size: 13px;
+  color: #5a6472;
+  margin-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.7);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.tl-subtitle::before{
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #235B4E;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Contenedor de timeline */
+.tl-row{
+  display:flex;
+  align-items:flex-start;
+  gap:0;
+  overflow-x:auto;
+  padding: 16px 8px 20px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.tl-row::-webkit-scrollbar{
+  height: 6px;
+}
+.tl-row::-webkit-scrollbar-track{
+  background: #e8ecf0;
+  border-radius: 3px;
+}
+.tl-row::-webkit-scrollbar-thumb{
+  background: linear-gradient(90deg, #691C32, #235B4E);
+  border-radius: 3px;
+}
+
+/* Items */
+.tl-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  flex-shrink:0;
+  transition: transform 0.3s ease;
+}
+.tl-item:hover{
+  transform: translateY(-4px);
+}
+
+/* Conectores mejorados */
+.tl-connector{
+  display:flex;
+  align-items:center;
+  margin-top:32px;
+  flex-shrink:0;
+  position: relative;
+}
+.tl-line{
+  height:3px;
+  width:24px;
+  background: linear-gradient(90deg, #d0d5dd, #98a2b3);
+  border-radius: 2px;
+  position: relative;
+}
+.tl-line::after{
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border: 2px solid #98a2b3;
+  border-radius: 50%;
+}
+.tl-arrow{
+  width:0;
+  height:0;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  border-left:10px solid #98a2b3;
+  filter: drop-shadow(1px 0 1px rgba(0,0,0,0.1));
+}
+
+/* Tarjetas de etapa */
+.etapa-card{
+  width:110px;
+  border-radius:14px;
+  padding:14px 10px 12px;
+  text-align:center;
+  border:none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.etapa-card::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: inherit;
+  filter: brightness(0.7);
+}
+.etapa-card:hover{
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08);
+  transform: scale(1.02);
+}
+
+/* Tarjetas de consejo */
+.consejo-card{
+  width:100px;
+  border-radius:14px;
+  padding:14px 10px 12px;
+  text-align:center;
+  border:2px dashed;
+  position:relative;
+  box-shadow: 0 4px 16px rgba(125, 60, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(145deg, #FDF0E6 0%, #fef8f2 100%);
+}
+.consejo-card::after{
+  content: '!';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background: #ff6b35;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(255, 107, 53, 0.4);
+}
+.consejo-card:hover{
+  box-shadow: 0 8px 24px rgba(125, 60, 0, 0.2);
+  transform: scale(1.02);
+}
+
+/* Círculo de número */
+.num-circle{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:700;
+  margin:0 auto 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  position: relative;
+}
+.num-circle::after{
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0.3;
+}
+
+/* Diamante para validaciones */
+.num-diamond{
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  font-weight:700;
+  margin:0 auto 10px;
+  transform:rotate(45deg);
+  border-radius: 6px;
+  box-shadow: 0 3px 10px rgba(125, 60, 0, 0.3);
+}
+.num-diamond span{
+  transform:rotate(-45deg);
+  display:block;
+  line-height:1;
+}
+
+/* Textos de tarjetas */
+.card-title{
+  font-size:11px;
+  font-weight:600;
+  line-height:1.35;
+  margin-bottom:6px;
+  letter-spacing: -0.2px;
+}
+.card-actor{
+  font-size:9px;
+  line-height:1.3;
+  font-weight: 500;
+  opacity: 0.85;
+  padding: 3px 6px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Labels debajo de tarjetas */
+.tl-label, .consejo-label{
+  font-size:10px;
+  color:#5a6472;
+  text-align:center;
+  margin-top:10px;
+  font-weight:600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tl-label{width:110px}
+.consejo-label{width:100px; color: #7D3C00}
+
+/* Leyenda de fases */
+.tl-phase{
+  display:flex;
+  flex-wrap: wrap;
+  gap:16px;
+  margin-top:20px;
+  padding: 16px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.phase-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.phase-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  flex-shrink:0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.phase-diamond{
+  width:10px;
+  height:10px;
+  flex-shrink:0;
+  transform:rotate(45deg);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.phase-label{
+  font-size:11px;
+  color:#3d4654;
+  font-weight: 500;
+}
+
+/* Nota de fase 2 */
+.fase2-note{
+  font-size:11px;
+  color:#5a6472;
+  margin-top:1.25rem;
+  padding:12px 16px;
+  background: linear-gradient(90deg, rgba(105, 28, 50, 0.05), rgba(35, 91, 78, 0.05));
+  border-radius: 10px;
+  border-left: 3px solid #691C32;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fase2-note::before{
+  content: '>';
+  font-weight: 700;
+  color: #691C32;
+}
+
+/* Colores específicos para etapas */
+.etapa-negocio{
+  background: linear-gradient(145deg, #F5EEF0 0%, #fdf6f8 100%);
+}
+.etapa-negocio::before{ background: #691C32; }
+
+.etapa-datos{
+  background: linear-gradient(145deg, #EAF4EA 0%, #f4faf4 100%);
+}
+.etapa-datos::before{ background: #235B4E; }
+
+.etapa-tecnica{
+  background: linear-gradient(145deg, #FEF9EC 0%, #fffdf6 100%);
+}
+.etapa-tecnica::before{ background: #BC955C; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tl-wrap { padding: 1.5rem 0.75rem 1rem; }
+  .tl-title { font-size: 16px; }
+  .etapa-card, .consejo-card { width: 95px; padding: 12px 8px; }
+  .tl-label, .consejo-label { width: 95px; font-size: 9px; }
+  .num-circle { width: 32px; height: 32px; font-size: 13px; }
+  .tl-phase { gap: 12px; }
+}
+
+/* Cursor pointer para tarjetas clickeables */
+.etapa-card, .consejo-card {
+  cursor: pointer;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.active {
+  display: flex;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: modalSlideIn 0.3s ease;
+}
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e8ecf0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  z-index: 1;
+}
+.modal-header.etapa-negocio { border-top: 4px solid #691C32; }
+.modal-header.etapa-datos { border-top: 4px solid #235B4E; }
+.modal-header.etapa-tecnica { border-top: 4px solid #BC955C; }
+.modal-header.validacion { border-top: 4px solid #7D3C00; }
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.modal-title .etapa-badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.modal-title .etapa-badge.negocio { background: #F5EEF0; color: #691C32; }
+.modal-title .etapa-badge.datos { background: #EAF4EA; color: #235B4E; }
+.modal-title .etapa-badge.tecnica { background: #FEF9EC; color: #BC955C; }
+.modal-title .etapa-badge.validacion { background: #FDF0E6; color: #7D3C00; }
+.modal-close {
+  background: #f0f2f5;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  color: #5a6472;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover {
+  background: #e8ecf0;
+  color: #1a1a2e;
+}
+.modal-body {
+  padding: 24px;
+}
+.modal-section {
+  margin-bottom: 20px;
+}
+.modal-section:last-child {
+  margin-bottom: 0;
+}
+.modal-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-section-title::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background: #691C32;
+  border-radius: 2px;
+}
+.modal-section.datos .modal-section-title::before { background: #235B4E; }
+.modal-section.tecnica .modal-section-title::before { background: #BC955C; }
+.modal-section.validacion .modal-section-title::before { background: #7D3C00; }
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.modal-list li {
+  padding: 8px 0 8px 20px;
+  position: relative;
+  font-size: 13px;
+  color: #3d4654;
+  line-height: 1.5;
+}
+.modal-list li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: #691C32;
+  font-weight: 700;
+}
+.modal-section.datos .modal-list li::before { color: #235B4E; }
+.modal-section.tecnica .modal-list li::before { color: #BC955C; }
+.modal-section.validacion .modal-list li::before { color: #7D3C00; }
+.modal-artefactos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+@media (max-width: 600px) {
+  .modal-artefactos { grid-template-columns: 1fr; }
+}
+.artefacto-box {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 12px;
+  border-left: 3px solid #98a2b3;
+}
+.artefacto-box.entrada { border-left-color: #691C32; background: #fdf6f8; }
+.artefacto-box.soporte { border-left-color: #235B4E; background: #f4faf4; }
+.artefacto-box.salida { border-left-color: #BC955C; background: #fffdf6; }
+.artefacto-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  color: #5a6472;
+}
+.artefacto-box.entrada .artefacto-title { color: #691C32; }
+.artefacto-box.soporte .artefacto-title { color: #235B4E; }
+.artefacto-box.salida .artefacto-title { color: #BC955C; }
+.artefacto-list {
+  font-size: 11px;
+  color: #3d4654;
+  line-height: 1.5;
+}
+</style>
+
+<div class="tl-wrap">
+<div class="tl-header">
+  <div class="tl-title">Plan de Implementación SNIER</div>
+  <div class="tl-subtitle">Fase 1 · Sin interoperabilidad · Con información disponible en SENER</div>
+</div>
+
+<div class="tl-row">
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-negocio" onclick="abrirModal('etapa1')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #7a2240, #691C32);color:#fff">1</div>
+      <div class="card-title" style="color:#3D0A1C">Mesas de trabajo</div>
+      <div class="card-actor" style="color:#691C32">Usuario responsable</div>
+    </div>
+    <div class="tl-label">Etapa 1</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-negocio" onclick="abrirModal('etapa2')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #7a2240, #691C32);color:#fff">2</div>
+      <div class="card-title" style="color:#3D0A1C">Inventario de datos disponibles en SENER</div>
+      <div class="card-actor" style="color:#691C32">TI SENER (BD + SIE)</div>
+    </div>
+    <div class="tl-label">Etapa 2</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="consejo-card" style="border-color:#7D3C00" onclick="abrirModal('validacion1')">
+      <div class="num-diamond" style="background:linear-gradient(145deg, #925000, #7D3C00);color:#fff">
+        <span>1</span>
+      </div>
+      <div class="card-title" style="color:#4A2000">Clasificación y alcance Fase 1</div>
+      <div class="card-actor" style="color:#7D3C00">Consejo del SNIER</div>
+    </div>
+    <div class="consejo-label">Validación 1</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-datos" onclick="abrirModal('etapa3')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #2a6b5e, #235B4E);color:#fff">3</div>
+      <div class="card-title" style="color:#0F3020">Gobierno del dato</div>
+      <div class="card-actor" style="color:#235B4E">Eq. TI Planeación · TI SENER</div>
+    </div>
+    <div class="tl-label">Etapa 3</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="consejo-card" style="border-color:#7D3C00" onclick="abrirModal('validacion2')">
+      <div class="num-diamond" style="background:linear-gradient(145deg, #925000, #7D3C00);color:#fff">
+        <span>2</span>
+      </div>
+      <div class="card-title" style="color:#4A2000">Aprobación Diccionario Canónico</div>
+      <div class="card-actor" style="color:#7D3C00">Consejo del SNIER</div>
+    </div>
+    <div class="consejo-label">Validación 2</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-datos" onclick="abrirModal('etapa4')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #2a6b5e, #235B4E);color:#fff">4</div>
+      <div class="card-title" style="color:#0F3020">Calidad del dato</div>
+      <div class="card-actor" style="color:#235B4E">TI SENER</div>
+    </div>
+    <div class="tl-label">Etapa 4</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-datos" onclick="abrirModal('etapa5')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #2a6b5e, #235B4E);color:#fff">5</div>
+      <div class="card-title" style="color:#0F3020">Visualización técnica</div>
+      <div class="card-actor" style="color:#235B4E">TI SENER</div>
+    </div>
+    <div class="tl-label">Etapa 5</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-tecnica" onclick="abrirModal('etapa6')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #d4a86a, #BC955C);color:#fff">6</div>
+      <div class="card-title" style="color:#5A4010">Experiencia de usuario</div>
+      <div class="card-actor" style="color:#BC955C">Usuario · Directivos</div>
+    </div>
+    <div class="tl-label">Etapa 6</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="consejo-card" style="border-color:#7D3C00" onclick="abrirModal('validacion3')">
+      <div class="num-diamond" style="background:linear-gradient(145deg, #925000, #7D3C00);color:#fff">
+        <span>3</span>
+      </div>
+      <div class="card-title" style="color:#4A2000">Visto bueno para publicación</div>
+      <div class="card-actor" style="color:#7D3C00">Consejo del SNIER</div>
+    </div>
+    <div class="consejo-label">Validación 3</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-tecnica" onclick="abrirModal('etapa7')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #d4a86a, #BC955C);color:#fff">7</div>
+      <div class="card-title" style="color:#5A4010">Implementación técnica</div>
+      <div class="card-actor" style="color:#BC955C">TI SENER</div>
+    </div>
+    <div class="tl-label">Etapa 7</div>
+  </div>
+
+  <div class="tl-connector">
+    <div class="tl-line"></div>
+    <div class="tl-arrow"></div>
+  </div>
+
+  <div class="tl-item">
+    <div class="etapa-card etapa-tecnica" onclick="abrirModal('etapa8')">
+      <div class="num-circle" style="background:linear-gradient(145deg, #d4a86a, #BC955C);color:#fff">8</div>
+      <div class="card-title" style="color:#5A4010">Operación y mantenimiento</div>
+      <div class="card-actor" style="color:#BC955C">TI SENER · Usuario</div>
+    </div>
+    <div class="tl-label">Etapa 8</div>
+  </div>
+
+</div>
+
+<div class="tl-phase">
+  <div class="phase-row">
+    <div class="phase-dot" style="background:linear-gradient(145deg, #7a2240, #691C32)"></div>
+    <span class="phase-label">Negocio — Etapas 1 y 2</span>
+  </div>
+  <div class="phase-row">
+    <div class="phase-dot" style="background:linear-gradient(145deg, #2a6b5e, #235B4E)"></div>
+    <span class="phase-label">Datos y gobierno — Etapas 3, 4 y 5</span>
+  </div>
+  <div class="phase-row">
+    <div class="phase-dot" style="background:linear-gradient(145deg, #d4a86a, #BC955C)"></div>
+    <span class="phase-label">Técnica y operación — Etapas 6, 7 y 8</span>
+  </div>
+  <div class="phase-row">
+    <div class="phase-diamond" style="background:linear-gradient(145deg, #925000, #7D3C00)"></div>
+    <span class="phase-label">Validación del Consejo del SNIER</span>
+  </div>
+</div>
+
+<div class="fase2-note">Fase 2 (fuera del alcance actual): DACS · Coordinación con sectorizados · Interoperabilidad y APIs</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-content">
+    <div class="modal-header" id="modalHeader">
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <button class="modal-close" onclick="cerrarModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const etapasData = {
+  etapa1: {
+    titulo: "Mesas de trabajo",
+    badge: "Etapa 1",
+    tipo: "negocio",
+    conQuien: ["Dirección responsable / Usuario responsable de cada sección del SNIEr"],
+    queSeHace: [
+      "Presentarle el estado actual del portal por sección",
+      "Preguntarle qué datos quiere ver en su sección",
+      "Preguntarle con qué periodicidad recibe esa información",
+      "Preguntarle quién genera ese dato",
+      "Mostrarle ejemplos de cómo otros países visualizan datos similares (Matriz de Plataformas)",
+      "Que valide o ajuste propuestas de visualización (gráfica, filtros, dimensiones)",
+      "Que defina si requiere vista geográfica (mapa)",
+      "Que priorice secciones urgentes para Fase 1",
+      "Que entregue o construya su matriz de datos disponibles"
+    ],
+    artefactos: {
+      entrada: ["Agenda de la reunión", "Matriz de requerimientos", "Matriz de Seguimiento", "Matriz de Plataformas", "Portal del SNIEr"],
+      soporte: [],
+      salida: ["Agenda firmada por el usuario responsable", "Matriz de requerimientos capturada", "Propuesta de visualización aprobada por subtema"]
+    }
+  },
+  etapa2: {
+    titulo: "Inventario de datos disponibles en SENER",
+    badge: "Etapa 2",
+    tipo: "negocio",
+    conQuien: ["TI de SENER"],
+    queSeHace: [
+      "Con TI de SENER — por cada subtema priorizado: ¿Existe tabla en BD?, ¿Tiene registros o está vacía?, ¿De qué período son los datos?, ¿Quién los cargó y cuándo?, ¿Está publicado en portal o solo en BD?, ¿Está en el formato que el usuario necesita?",
+      "Con TI de SENER — revisión del SIE por cada subtema priorizado: ¿Este dato está en el SIE?, ¿Qué sectorizado lo genera?, ¿Con qué mecanismo llega (ETL o carga directa)?, ¿En qué condiciones se puede consumir desde el SNIEr?, ¿Qué tan actualizado está?"
+    ],
+    artefactos: {
+      entrada: ["Matriz de requerimientos (salida de Etapa 1)", "Cuestionario técnico para TI de SENER (BD + SIE)"],
+      soporte: ["Matriz de requerimientos"],
+      salida: ["Diagnóstico de datos por subtema", "Catálogo de campos por subtema"]
+    }
+  },
+  validacion1: {
+    titulo: "Clasificación y alcance Fase 1",
+    badge: "Validación 1",
+    tipo: "validacion",
+    conQuien: ["Consejo del SNIER"],
+    queSeHace: [
+      "Validar los resultados del inventario de datos disponibles en SENER",
+      "Aprobar qué subtemas van a Fase 1 y cuáles quedan para Fase 2",
+      "Aprobar la clasificación por subtema: Pública / Condicionada / Restringida (facultad del Consejo según el Reglamento LPyTE)",
+      "Validar la lista priorizada de subtemas para implementación inmediata"
+    ],
+    artefactos: {
+      entrada: ["Matriz de requerimientos capturada (salida de Etapa 1)", "Diagnóstico de datos por subtema (salida de Etapa 2)"],
+      soporte: [],
+      salida: ["Matriz de requerimientos con sección de validación del Consejo completada", "Diagnóstico de datos por subtema con campo Fase validado"]
+    }
+  },
+  etapa3: {
+    titulo: "Gobierno del dato",
+    badge: "Etapa 3",
+    tipo: "datos",
+    conQuien: ["Equipo de TI de Planeación", "TI de SENER (para validar que los nombres coincidan con los campos en BD)"],
+    queSeHace: [
+      "Formalizar el Diccionario Canónico con base en lo que el usuario capturó: revisar que el nombre del dato sea único, formalizar la definición en lenguaje técnico oficial, confirmar la unidad oficial con TI de SENER y validar que las reglas de validación sean técnicamente implementables",
+      "Proponer la clasificación porque el Consejo ya aprobó",
+      "Validar con TI que los nombres del Diccionario coinciden con los campos en BD del SNIEr",
+      "Validar con TI de SENER que los nombres coinciden con lo que tienen en el SIE"
+    ],
+    artefactos: {
+      entrada: ["Diagnóstico de datos por subtema con campo Fase validado (salida de Validación 1)", "Catálogo de campos por subtema (salida de Etapa 2)", "Matriz de requerimientos con sección de validación del Consejo completada (salida de Validación 1)"],
+      soporte: ["Matriz de Seguimiento"],
+      salida: ["Matriz de requerimientos con sección de definición del dato formalizada y validado por TI", "Catálogo de campos por subtema actualizado con nombres canónicos"]
+    }
+  },
+  validacion2: {
+    titulo: "Aprobación del Diccionario Canónico",
+    badge: "Validación 2",
+    tipo: "validacion",
+    conQuien: ["Consejo del SNIER"],
+    queSeHace: [
+      "Aprobar el Diccionario Canónico de Datos: nombre oficial, definición, unidad, formato y fuente por subtema",
+      "Validar los estándares de calidad que debe cumplir cada dato antes de publicarse",
+      "Aprobar los criterios de validación por tipo de dato",
+      "Ratificar la clasificación Pública / Condicionada / Restringida por subtema"
+    ],
+    artefactos: {
+      entrada: ["Diccionario Canónico de Datos (salida de Etapa 3)"],
+      soporte: [],
+      salida: ["Diccionario Canónico aprobado formalmente", "Estándares de calidad oficiales por subtema"]
+    }
+  },
+  etapa4: {
+    titulo: "Calidad del dato",
+    badge: "Etapa 4",
+    tipo: "datos",
+    conQuien: ["TI de SENER"],
+    queSeHace: [
+      "Por cada subtema con dato disponible (BD o SIE) validar:",
+      "¿El dato está en la unidad correcta que definió el usuario?",
+      "¿El período disponible coincide con lo que el usuario necesita?",
+      "¿El dato tiene huecos históricos?",
+      "¿La frecuencia con que llega coincide con la periodicidad definida en Etapa 1?",
+      "¿El dato pasa las reglas de validación del Diccionario Canónico?",
+      "Documentar por subtema: Completo (listo para publicar) / Incompleto (requiere ajuste) / Con huecos (publicar con nota) / No disponible (va a Fase 2)"
+    ],
+    artefactos: {
+      entrada: ["Diccionario Canónico de Datos (salida de Etapa 3)", "Diagnóstico de datos por subtema (salida de Etapa 2)"],
+      soporte: ["Cuestionario técnico de calidad para TI de SENER"],
+      salida: ["Reporte de calidad por subtema: Completo / Incompleto / Con huecos / No disponible", "Lista de ajustes necesarios antes de publicar", "Lista de subtemas listos para cargar al portal"]
+    }
+  },
+  etapa5: {
+    titulo: "Visualización técnica",
+    badge: "Etapa 5",
+    tipo: "datos",
+    conQuien: ["TI de SENER"],
+    queSeHace: [
+      "Con base en la visualización aprobada por el usuario (Etapa 1) definir con TI:",
+      "¿Con qué herramienta se implementa cada gráfica? (Power BI, Chart.js, visor propio)",
+      "¿Cómo se conecta la gráfica con la BD o el SIE?",
+      "¿Requiere capa geográfica (GIS, mapa interactivo)?",
+      "¿Qué tan pesada es la consulta a la BD?",
+      "¿Cuánto tiempo toma desarrollar cada visualización?",
+      "Generar un plan de desarrollo priorizado por subtema con estimación de tiempos"
+    ],
+    artefactos: {
+      entrada: ["Propuesta de visualización aprobada por usuario (Etapa 1)", "Lista de subtemas activables en Fase 1 (Etapa 2)", "Reporte de calidad del dato (Etapa 4)"],
+      soporte: ["Matriz de Plataformas (ejemplos de gráficas por subtema)", "Portal del SNIEr (prototipo para mostrar a TI qué se espera implementar)"],
+      salida: ["Especificación técnica de visualización por subtema: herramienta, conexión, tiempo estimado", "Mapa de subtemas que requieren representación geográfica", "Plan de desarrollo priorizado"]
+    }
+  },
+  etapa6: {
+    titulo: "Experiencia de usuario",
+    badge: "Etapa 6",
+    tipo: "tecnica",
+    conQuien: ["Usuario responsable de cada sección", "Directivos"],
+    queSeHace: [
+      "Presentar el portal prototipo actualizado con las secciones trabajadas en las etapas anteriores",
+      "Validar con el usuario: ¿La navegación es clara?, ¿El flujo de las secciones tiene sentido?, ¿Las gráficas se ven como las imaginó en Etapa 1?, ¿Falta o sobra algo?",
+      "Validar con directivos: ¿El portal cumple con la imagen institucional?, ¿La navegación es ejecutiva y no técnica?, ¿Se aprueba para implementar?",
+      "Documentar ajustes finales y firmar aprobación del portal antes de que TI implemente"
+    ],
+    artefactos: {
+      entrada: ["Especificación técnica de visualización (Etapa 5)", "Plan de desarrollo priorizado (Etapa 5)"],
+      soporte: ["Portal del SNIEr", "Matriz de Seguimiento (para mostrar avance por sección)"],
+      salida: ["Portal validado y aprobado por usuario y directivos", "Lista de ajustes de UX aprobados", "Documento de navegación oficial firmado para que TI implemente"]
+    }
+  },
+  validacion3: {
+    titulo: "Visto bueno para publicación",
+    badge: "Validación 3",
+    tipo: "validacion",
+    conQuien: ["Consejo del SNIER"],
+    queSeHace: [
+      "Aprobar qué subtemas y secciones se publican en la Fase 1",
+      "Validar que la información cumple con los criterios del Reglamento LPyTE",
+      "Autorizar formalmente la publicación en el ambiente de producción",
+      "Definir el mecanismo de actualización periódica y su supervisión"
+    ],
+    artefactos: {
+      entrada: ["Portal validado y aprobado por usuario y directivos (salida de Etapa 6)", "Reporte de calidad del dato (salida de Etapa 4)"],
+      soporte: [],
+      salida: ["Autorización formal de publicación", "Lista de subtemas aprobados para Fase 1 en producción"]
+    }
+  },
+  etapa7: {
+    titulo: "Implementación técnica",
+    badge: "Etapa 7",
+    tipo: "tecnica",
+    conQuien: ["TI de SENER"],
+    queSeHace: [
+      "Organizar y preparar la información disponible para que pueda publicarse en el portal: primero se recibe tal como llega, luego se limpia y valida, y finalmente se deja lista para el usuario",
+      "Cargar la información de las secciones priorizadas en Fase 1",
+      "Construir las gráficas y tableros que el usuario aprobó en Etapa 1",
+      "Aplicar los ajustes de navegación que se validaron en Etapa 6",
+      "Publicar el portal en el ambiente de producción"
+    ],
+    artefactos: {
+      entrada: ["Diccionario Canónico de Datos (Etapa 3)", "Especificación técnica de visualización (Etapa 5)", "Documento de navegación oficial aprobado (Etapa 6)", "Reporte de calidad del dato (Etapa 4)"],
+      soporte: ["Matriz de Seguimiento (para dar seguimiento al avance de implementación por subtema)", "Portal del SNIEr (como referencia visual para el desarrollo)"],
+      salida: ["Subtemas publicados en el portal con dato real y visualización", "Data lake estructurado y operativo (capas bronce, plata y oro)", "Portal con nueva navegación operativo en producción"]
+    }
+  },
+  etapa8: {
+    titulo: "Operación y mantenimiento",
+    badge: "Etapa 8",
+    tipo: "tecnica",
+    conQuien: ["TI de SENER", "Usuario responsable de cada sección"],
+    queSeHace: [
+      "Definir el proceso formal de actualización periódica: quién entrega el dato, en qué formato, por qué canal, con qué frecuencia, quién valida antes de publicar, qué pasa si llega tarde o incompleto",
+      "Documentar el manual de operación del SNIEr",
+      "Definir indicadores de monitoreo: completitud del dato, oportunidad (llega a tiempo), calidad (pasa validaciones)",
+      "Planear la mejora continua: revisión periódica con usuarios, incorporación de nuevas secciones, preparación para Fase 2"
+    ],
+    artefactos: {
+      entrada: ["Portal operativo en producción (Etapa 7)", "Diccionario Canónico de Datos (Etapa 3)", "Lista de subtemas activables y responsables (Etapas 1 y 2)"],
+      soporte: ["Matriz de Seguimiento (para monitorear completitud y calidad por sección)"],
+      salida: ["Manual de operación del SNIEr (flujo de actualización por periodicidad: mensual, trimestral, anual)", "Indicadores de monitoreo definidos y operativos", "Hoja de ruta para Fase 2"]
+    }
+  }
+};
+
+function abrirModal(etapaId) {
+  const data = etapasData[etapaId];
+  if (!data) return;
+
+  const modal = document.getElementById('modalOverlay');
+  const header = document.getElementById('modalHeader');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+
+  // Limpiar clases anteriores
+  header.className = 'modal-header';
+  if (data.tipo === 'negocio') header.classList.add('etapa-negocio');
+  else if (data.tipo === 'datos') header.classList.add('etapa-datos');
+  else if (data.tipo === 'tecnica') header.classList.add('etapa-tecnica');
+  else if (data.tipo === 'validacion') header.classList.add('validacion');
+
+  // Título
+  const badgeClass = data.tipo === 'validacion' ? 'validacion' : data.tipo;
+  title.innerHTML = `<span class="etapa-badge ${badgeClass}">${data.badge}</span> ${data.titulo}`;
+
+  // Contenido
+  let html = '';
+
+  // Sección: ¿Con quién?
+  html += `<div class="modal-section ${data.tipo}">
+    <div class="modal-section-title">¿Con quién?</div>
+    <ul class="modal-list">
+      ${data.conQuien.map(item => `<li>${item}</li>`).join('')}
+    </ul>
+  </div>`;
+
+  // Sección: ¿Qué se hace?
+  const tituloAccion = data.tipo === 'validacion' ? 'Decisiones del Consejo' : '¿Qué se hace?';
+  html += `<div class="modal-section ${data.tipo}">
+    <div class="modal-section-title">${tituloAccion}</div>
+    <ul class="modal-list">
+      ${data.queSeHace.map(item => `<li>${item}</li>`).join('')}
+    </ul>
+  </div>`;
+
+  // Sección: Artefactos
+  if (data.artefactos.entrada.length > 0 || data.artefactos.soporte.length > 0 || data.artefactos.salida.length > 0) {
+    html += `<div class="modal-section ${data.tipo}">
+      <div class="modal-section-title">Artefactos</div>
+      <div class="modal-artefactos">
+        <div class="artefacto-box entrada">
+          <div class="artefacto-title">Entrada</div>
+          <div class="artefacto-list">${data.artefactos.entrada.length > 0 ? data.artefactos.entrada.map(i => '• ' + i).join('<br>') : '—'}</div>
+        </div>
+        <div class="artefacto-box soporte">
+          <div class="artefacto-title">Soporte</div>
+          <div class="artefacto-list">${data.artefactos.soporte.length > 0 ? data.artefactos.soporte.map(i => '• ' + i).join('<br>') : '—'}</div>
+        </div>
+        <div class="artefacto-box salida">
+          <div class="artefacto-title">Salida</div>
+          <div class="artefacto-list">${data.artefactos.salida.length > 0 ? data.artefactos.salida.map(i => '• ' + i).join('<br>') : '—'}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  body.innerHTML = html;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Cerrar al hacer clic fuera del modal
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModal();
+});
+
+// Cerrar con tecla Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cerrarModal();
+});
+</script>

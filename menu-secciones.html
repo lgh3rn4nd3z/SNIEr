@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNIEr - Sistema Nacional de Información Energética</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gob-guinda: #691C32;
+            --gob-guinda-dark: #4a1423;
+            --gob-guinda-light: #8B2346;
+            --gob-dorado: #BC955C;
+            --gob-dorado-light: #D4AF7A;
+            --gob-verde: #235B4E;
+            --gob-verde-light: #2D7366;
+            --gob-blanco: #FFFFFF;
+            --gob-gris-claro: #F5F5F5;
+            --gob-gris: #6D6D6D;
+            --gob-negro: #1A1A1A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--gob-gris-claro);
+            min-height: 100vh;
+        }
+
+        /* Header Gobierno */
+        .gob-header {
+            background-color: var(--gob-guinda);
+            padding: 0;
+        }
+
+        .gob-header-top {
+            background-color: var(--gob-guinda-dark);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gob-header-top a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .gob-header-top a:hover {
+            opacity: 1;
+        }
+
+        .gob-header-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gob-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gob-logo-img {
+            height: 50px;
+        }
+
+        .gob-logo-text {
+            color: var(--gob-blanco);
+            font-size: 0.9rem;
+            line-height: 1.3;
+            border-left: 2px solid var(--gob-dorado);
+            padding-left: 15px;
+        }
+
+        .gob-logo-text strong {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .gob-nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        .gob-nav a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .gob-nav a:hover {
+            border-bottom-color: var(--gob-dorado);
+        }
+
+        .gob-gold-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--gob-dorado) 0%, var(--gob-dorado-light) 50%, var(--gob-dorado) 100%);
+        }
+
+        /* Título de la página */
+        .page-title {
+            background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .page-title h1 {
+            color: var(--gob-blanco);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .page-title .article-reference {
+            max-width: 1000px;
+            margin: 20px auto -40px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            background: var(--gob-blanco);
+            padding: 25px 35px;
+            border-radius: 12px;
+            border-left: 6px solid var(--gob-dorado);
+            color: var(--gob-negro);
+            text-align: left;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+            transform: translateY(20px);
+        }
+
+        .page-title .article-reference strong {
+            font-size: 1.2rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            color: var(--gob-blanco);
+            padding: 6px 16px;
+            border-radius: 6px;
+            margin-right: 10px;
+            box-shadow: 0 3px 8px rgba(105, 28, 50, 0.3);
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px 30px;
+        }
+
+        /* Acordeón de secciones */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Sección principal */
+        .section-item {
+            background: var(--gob-blanco);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .section-item:hover {
+            box-shadow: 0 8px 25px rgba(105, 28, 50, 0.12);
+        }
+
+        .section-item.active {
+            border-color: var(--gob-guinda);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            cursor: pointer;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .section-header:hover {
+            background: rgba(105, 28, 50, 0.03);
+        }
+
+        .section-item.active .section-header {
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+        }
+
+        .section-number {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gob-blanco);
+            flex-shrink: 0;
+        }
+
+        .section-item.active .section-number {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .section-info {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gob-negro);
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .section-item.active .section-title {
+            color: var(--gob-blanco);
+        }
+
+        .section-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--gob-gris);
+        }
+
+        .section-item.active .section-meta {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .section-meta i {
+            color: var(--gob-guinda);
+        }
+
+        .section-item.active .section-meta i {
+            color: var(--gob-dorado);
+        }
+
+        .section-arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gob-gris-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gob-guinda);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .section-item.active .section-arrow {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--gob-blanco);
+            transform: rotate(180deg);
+        }
+
+        /* Contenido del acordeón */
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: #fafafa;
+        }
+
+        .section-item.active .section-content {
+            max-height: 2000px;
+        }
+
+        .section-content-inner {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Subsecciones */
+        .subsection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .subsection-item {
+            background: var(--gob-blanco);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .subsection-item:hover {
+            border-color: var(--gob-verde);
+        }
+
+        .subsection-item.active {
+            border-color: var(--gob-verde);
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .subsection-header:hover {
+            background: rgba(35, 91, 78, 0.05);
+        }
+
+        .subsection-item.active .subsection-header {
+            background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+        }
+
+        .subsection-number {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gob-blanco);
+            flex-shrink: 0;
+        }
+
+        .subsection-item.active .subsection-number {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .subsection-info {
+            flex: 1;
+        }
+
+        .subsection-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gob-negro);
+            margin-bottom: 4px;
+        }
+
+        .subsection-item.active .subsection-title {
+            color: var(--gob-blanco);
+        }
+
+        .subsection-meta {
+            font-size: 0.75rem;
+            color: var(--gob-gris);
+        }
+
+        .subsection-item.active .subsection-meta {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .subsection-meta i {
+            color: var(--gob-verde);
+            margin-right: 5px;
+        }
+
+        .subsection-item.active .subsection-meta i {
+            color: var(--gob-dorado);
+        }
+
+        .subsection-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gob-gris-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gob-verde);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .subsection-item.active .subsection-arrow {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--gob-blanco);
+            transform: rotate(180deg);
+        }
+
+        /* Contenido de subsección */
+        .subsection-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: #f5f5f5;
+        }
+
+        .subsection-item.active .subsection-content {
+            max-height: 1500px;
+        }
+
+        .subsection-content-inner {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Items (enlaces finales) */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .item-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--gob-blanco);
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .item-link:hover {
+            border-color: var(--gob-dorado);
+            box-shadow: 0 4px 15px rgba(188, 149, 92, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .item-link.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--gob-dorado) 0%, var(--gob-dorado-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gob-blanco);
+            flex-shrink: 0;
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gob-negro);
+            margin-bottom: 3px;
+        }
+
+        .item-subtitle {
+            font-size: 0.7rem;
+            color: var(--gob-gris);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .item-subtitle i {
+            color: var(--gob-dorado);
+        }
+
+        .no-link-badge {
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        /* Separador */
+        .separator-item {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border-radius: 8px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px dashed #ccc;
+        }
+
+        .separator-item i {
+            color: var(--gob-gris);
+            font-size: 1.2rem;
+        }
+
+        .separator-item span {
+            color: var(--gob-gris);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--gob-gris);
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Footer Gobierno */
+        .gob-footer {
+            background: var(--gob-guinda-dark);
+            padding: 40px 30px 20px;
+            margin-top: 40px;
+        }
+
+        .gob-footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .gob-footer-section h4 {
+            color: var(--gob-dorado);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gob-footer-section p,
+        .gob-footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            text-decoration: none;
+        }
+
+        .gob-footer-section a:hover {
+            color: var(--gob-dorado);
+        }
+
+        .gob-footer-bottom {
+            max-width: 1400px;
+            margin: 30px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .gob-footer-bottom p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gob-header-main {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .gob-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 40px 15px 20px;
+            }
+
+            .section-header {
+                padding: 15px 18px;
+                gap: 15px;
+            }
+
+            .section-number {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 0.85rem;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Gobierno de México -->
+    <header class="gob-header">
+        <div class="gob-header-top">
+            <a href="#">gob.mx</a>
+            <a href="#">Trámites</a>
+            <a href="#">Gobierno</a>
+            <a href="#">Contacto</a>
+        </div>
+        <div class="gob-header-main">
+            <div class="gob-logo">
+                <svg class="gob-logo-img" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="10" y="35" fill="#BC955C" font-family="Montserrat" font-weight="700" font-size="28">GOB</text>
+                    <text x="75" y="35" fill="#FFFFFF" font-family="Montserrat" font-weight="300" font-size="28">.MX</text>
+                </svg>
+                <div class="gob-logo-text">
+                    <strong>Secretaría de Energía</strong>
+                    Sistema Nacional de Información Energética
+                </div>
+            </div>
+            <nav class="gob-nav">
+                <a href="https://qa-ti.energia.gob.mx/snien/public/inicio">Inicio</a>
+            </nav>
+        </div>
+    </header>
+    <div class="gob-gold-bar"></div>
+
+    <!-- Título de la página -->
+    <div class="page-title">
+        <h1><i class="fas fa-database"></i> Contenido del Sistema de Información</h1>
+        <p class="article-reference" style="text-align: center; font-weight: bold;">Reglamento de la ley de planeación y transición energética</p>
+        <p class="article-reference"><strong>Artículo 69.</strong> El Sistema Nacional de Información Energética debe concentrar, integrar, organizar, actualizar y, en su caso, difundir los registros de información</p>
+    </div>
+
+    <div class="container">
+        <div class="accordion" id="sectionsAccordion">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Footer Gobierno de México -->
+    <footer class="gob-footer">
+        <div class="gob-footer-content">
+            <div class="gob-footer-section">
+                <h4>Enlaces</h4>
+                <p><a href="#">Datos Abiertos</a></p>
+                <p><a href="#">Publicaciones Oficiales</a></p>
+                <p><a href="#">Marco Jurídico</a></p>
+                <p><a href="#">Plataforma Nacional de Transparencia</a></p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>¿Qué es gob.mx?</h4>
+                <p>Es el portal único de trámites, información y participación ciudadana.</p>
+                <p><a href="#">Conoce más sobre el portal</a></p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>Contacto</h4>
+                <p>Secretaría de Energía</p>
+                <p>Insurgentes Sur 890, Col. Del Valle</p>
+                <p>Ciudad de México, C.P. 03100</p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>Síguenos</h4>
+                <p><a href="#"><i class="fab fa-facebook"></i> Facebook</a></p>
+                <p><a href="#"><i class="fab fa-twitter"></i> Twitter</a></p>
+                <p><a href="#"><i class="fab fa-youtube"></i> YouTube</a></p>
+            </div>
+        </div>
+        <div class="gob-footer-bottom">
+            <p>Sistema Nacional de Información Energética - Secretaría de Energía | Gobierno de México</p>
+        </div>
+    </footer>
+
+    <script>
+        // Datos completos
+        const sectionsData = [
+            {
+                id: 1,
+                number: "I",
+                icon: "fa-oil-well",
+                title: "El inventario y el potencial de los recursos renovables, así como la estimación de las Reservas, la relación entre producción y Reservas y los Recursos Prospectivos y contingentes de Hidrocarburos",
+                subsections: [
+                    {
+                        id: "1.1",
+                        title: "Infraestructura de hidrocarburos",
+                        icon: "fa-industry",
+                        items: [
+                            { id: "1.1.1", title: "Exploración", icon: "fa-search-location", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/exploracion" },
+                            { id: "1.1.2", title: "Producción", icon: "fa-oil-can", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/produccion" },
+                            { id: "1.1.3", title: "Refinación", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/refinacion" },
+                            { id: "1.1.4", title: "Procesamiento de gas natural", icon: "fa-burn", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/procesamiento-gas" },
+                            { id: "1.1.5", title: "Almacenamiento", icon: "fa-warehouse", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/almacenamiento" },
+                            { id: "1.1.6", title: "Transporte", icon: "fa-truck-moving", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/transporte" },
+                            { id: "1.1.7", title: "Distribución", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/distribucion" },
+                            { id: "1.1.8", title: "Comercialización", icon: "fa-handshake", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/comercializacion" },
+                            { id: "1.1.9", title: "Comercio exterior", icon: "fa-globe-americas", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/comercio-exterior" },
+                            { id: "1.1.10", title: "Reservas", icon: "fa-database", url: "https://qa-ti.energia.gob.mx/snien/public/diagnostico-energetico/hidrocarburos/reservas" },
+                            { id: "1.1.11", title: "Prospectivas", icon: "fa-chart-line", url: null },
+                            { id: "1.1.12", title: "Contingentes", icon: "fa-exclamation-triangle", url: null }
+                        ]
+                    },
+                    {
+                        id: "1.2",
+                        title: "Infraestructura del sector eléctrico",
+                        icon: "fa-bolt",
+                        items: [
+                            { id: "1.2.1", title: "Centrales eléctricas del SEN", icon: "fa-building", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/centrales-sen" },
+                            { id: "1.2.2", title: "Red Nacional de Transmisión", icon: "fa-network-wired", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/red-transmision" },
+                            { id: "1.2.3", title: "Redes Generales de Distribución", icon: "fa-sitemap", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/redes-distribucion" },
+                            { id: "1.2.4", title: "Centrales no interconectadas", icon: "fa-plug", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/centrales-no-interconectadas" },
+                            { id: "1.2.5", title: "Generación Distribuida", icon: "fa-solar-panel", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/generacion-distribuida" },
+                            { id: "1.2.6", title: "Subestaciones eléctricas", icon: "fa-charging-station", url: null }
+                        ]
+                    },
+                    {
+                        id: "1.3",
+                        title: "Otra Infraestructura",
+                        icon: "fa-leaf",
+                        items: [
+                            { id: "1.3.1", title: "Calentadores solares de agua", icon: "fa-sun", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/calentadores-solares" },
+                            { id: "1.3.2", title: "Estufas eficientes de leña", icon: "fa-fire", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/estufas-lena" },
+                            { id: "1.3.3", title: "Sistemas geotérmicos de usos diversos", icon: "fa-mountain", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/sistemas-geotermicos" },
+                            { id: "1.3.4", title: "Sistemas térmicos de biomasa", icon: "fa-seedling", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/sistemas-biomasa" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                number: "II",
+                icon: "fa-chart-bar",
+                title: "Registros con información estadística sobre el origen y destino de la energía, situación del Sistema Energético, avances en proyectos, innovación y Justicia Energética",
+                subsections: [
+                    {
+                        id: "2.1",
+                        title: "Origen y destino de la energía",
+                        icon: "fa-balance-scale",
+                        items: [
+                            { id: "2.1.1", title: "Balances históricos", icon: "fa-history", url: "https://qa-ti.energia.gob.mx/snien/public/balance-nacional" },
+                            { id: "2.1.2", title: "Producción de energía primaria", icon: "fa-chart-pie", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/produccion-primaria" },
+                            { id: "2.1.3", title: "Oferta Interna Bruta", icon: "fa-chart-pie", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/oferta-interna-bruta" },
+                            { id: "2.1.4", title: "Refinación", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/refinacion" },
+                            { id: "2.1.5", title: "Procesamiento de gas natural", icon: "fa-burn", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/procesamiento-gas" },
+                            { id: "2.1.6", title: "Generación eléctrica", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/balance-nacional" },
+                            { id: "2.1.7", title: "Almacenamiento", icon: "fa-warehouse", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/almacenamiento" },
+                            { id: "2.1.8", title: "Transporte y transmisión", icon: "fa-truck-moving", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/transporte-transmision" },
+                            { id: "2.1.9", title: "Distribución", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/distribucion" },
+                            { id: "2.1.10", title: "Consumo final", icon: "fa-users", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/consumo-final" },
+                            { id: "2.1.11", title: "Aprovechamiento directo", icon: "fa-hand-holding-water", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/aprovechamiento-directo" }
+                        ]
+                    },
+                    {
+                        id: "2.2",
+                        title: "Situación del Sistema Energético",
+                        icon: "fa-store",
+                        items: [
+                            { id: "2.2.1", title: "Electricidad - MEM", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/mem" },
+                            { id: "2.2.2", title: "Electricidad - Tarifas del MEM", icon: "fa-tags", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-mem" },
+                            { id: "2.2.3", title: "Electricidad - Tarifas usuario finales", icon: "fa-file-invoice-dollar", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-usuarios" },
+                            { id: "2.2.4", title: "Certificados de Energías Limpias", icon: "fa-certificate", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" },
+                            { id: "2.2.5", title: "Gasolina", icon: "fa-gas-pump", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/gasolina" },
+                            { id: "2.2.6", title: "Diesel", icon: "fa-tint", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/diesel" },
+                            { id: "2.2.7", title: "Gas natural", icon: "fa-fire-alt", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/gas-natural" },
+                            { id: "2.2.8", title: "GLP", icon: "fa-fire", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/glp" },
+                            { id: "2.2.9", title: "Otros", icon: "fa-ellipsis-h", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/otros" }
+                        ]
+                    },
+                    {
+                        id: "2.3",
+                        title: "Avance en proyectos y programas",
+                        icon: "fa-tasks",
+                        items: [
+                            { id: "2.3.1", title: "Proyectos", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/proyectos-impulsados" },
+                            { id: "2.3.2", title: "Programas", icon: "fa-clipboard-list", url: null },
+                            { id: "2.3.3", title: "Indicadores", icon: "fa-chart-line", url: null },
+                            { id: "2.3.4", title: "Metas de los instrumentos de Planeación", icon: "fa-bullseye", url: null },
+                            { id: "2.3.5", title: "Instrumentos de planeación", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/instrumentos" }
+                        ]
+                    },
+                    {
+                        id: "2.4",
+                        title: "Innovación y desarrollo tecnológico",
+                        icon: "fa-lightbulb",
+                        items: [
+                            { id: "2.4.1", title: "Proyectos impulsados", icon: "fa-rocket", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/proyectos-impulsados" },
+                            { id: "2.4.2", title: "Próximas convocatorias", icon: "fa-bullhorn", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/convocatorias/fotease" },
+                            { id: "2.4.3", title: "IMP", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/imp" },
+                            { id: "2.4.4", title: "INEEL", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/ineel" },
+                            { id: "2.4.5", title: "ININ", icon: "fa-atom", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/inin" }
+                        ]
+                    },
+                    {
+                        id: "2.5",
+                        title: "Justicia Energética",
+                        icon: "fa-balance-scale-left",
+                        items: [
+                            { id: "2.5.1", title: "Acceso a la electricidad", icon: "fa-plug", url: "https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/acceso-electricidad" },
+                            { id: "2.5.2", title: "Estabilización de precios", icon: "fa-chart-line", url: "https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/estabilizacion-precios" },
+                            { id: "2.5.3", title: "Estrategias y programas de justicia energética", icon: "fa-hands-helping", url: "https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/estrategias-programas" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                number: "III",
+                icon: "fa-solar-panel",
+                title: "La información sobre la Generación Distribuida y en aplicaciones aisladas de la red",
+                subsections: [
+                    {
+                        id: "3.1",
+                        title: "Electricidad",
+                        icon: "fa-bolt",
+                        items: [
+                            { id: "3.1.1", title: "MEM", icon: "fa-building", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/mem" },
+                            { id: "3.1.2", title: "Tarifas del MEM", icon: "fa-network-wired", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-mem" },
+                            { id: "3.1.3", title: "Tarifas usuario finales", icon: "fa-sitemap", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-usuarios" },
+                            { id: "3.1.4", title: "Certificados de Energías Limpias", icon: "fa-certificate", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                number: "IV",
+                icon: "fa-leaf",
+                title: "La información en materia de Eficiencia Energética",
+                subsections: [
+                    {
+                        id: "4.1",
+                        title: "Eficiencia Energética",
+                        icon: "fa-leaf",
+                        items: [
+                            { id: "4.1.1", title: "Refinación", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/refinacion" },
+                            { id: "4.1.2", title: "Procesamiento de gas natural", icon: "fa-burn", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/procesamiento-gas" },
+                            { id: "4.1.3", title: "Generación eléctrica", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/balance-nacional" },
+                            { id: "4.1.4", title: "Almacenamiento", icon: "fa-warehouse", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/almacenamiento" },
+                            { id: "4.1.5", title: "Transporte y transmisión", icon: "fa-truck-moving", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/transporte-transmision" },
+                            { id: "4.1.6", title: "Distribución", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/consumo-final" },
+                            { id: "4.1.7", title: "Consumo final", icon: "fa-users", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/Distribucion" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 5,
+                number: "V",
+                icon: "fa-certificate",
+                title: "La información sobre los Certificados de Energías Limpias",
+                subsections: [
+                    {
+                        id: "5.1",
+                        title: "Certificados de Energías Limpias",
+                        icon: "fa-certificate",
+                        items: [
+                            { id: "5.1.1", title: "Certificados de Energías Limpias", icon: "fa-award", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 6,
+                number: "VI",
+                icon: "fa-cogs",
+                title: "Un catálogo de tecnologías para la generación de energía eléctrica y habilitadoras, que incluya parámetros de operación, técnicos y económicos",
+                subsections: [
+                    {
+                        id: "6.1",
+                        title: "Catálogos de tecnologías",
+                        icon: "fa-cogs",
+                        items: [
+                            { id: "6.1.1", title: "Catálogos de tecnologías", icon: "fa-book", url: "https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/catalogos" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 7,
+                number: "VII",
+                icon: "fa-chart-line",
+                title: "El escenario de referencia y los escenarios del Sector Energético a mediano y largo plazo, e incluir los ahorros energéticos y la mitigación de emisiones de gases de efecto invernadero asociada a ellos",
+                subsections: [
+                    {
+                        id: "7.1",
+                        title: "Escenarios de referencia y planeación",
+                        icon: "fa-chart-line",
+                        items: [
+                            { id: "7.1.1", title: "Escenarios de referencia y planeación", icon: "fa-route", url: "https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/escenarios" }
+                        ]
+                    }
+                ]
+            },
+            { id: "separator", type: "separator", title: "Información Complementaria" },
+            {
+                id: 8,
+                number: "VIII",
+                icon: "fa-cubes",
+                title: "Otros insumos internos del sector",
+                subsections: []
+            }
+        ];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAccordion();
+        });
+
+        // Renderizar acordeón
+        function renderAccordion() {
+            const accordion = document.getElementById('sectionsAccordion');
+            accordion.innerHTML = '';
+
+            sectionsData.forEach(section => {
+                if (section.type === 'separator') {
+                    const separator = document.createElement('div');
+                    separator.className = 'separator-item';
+                    separator.innerHTML = `
+                        <i class="fas fa-info-circle"></i>
+                        <span>${section.title}</span>
+                    `;
+                    accordion.appendChild(separator);
+                } else {
+                    const subsectionCount = section.subsections ? section.subsections.length : 0;
+                    const sectionElement = document.createElement('div');
+                    sectionElement.className = 'section-item';
+                    sectionElement.id = `section-${section.id}`;
+
+                    sectionElement.innerHTML = `
+                        <div class="section-header" onclick="toggleSection(${section.id})">
+                            <div class="section-number">${section.number}</div>
+                            <div class="section-info">
+                                <div class="section-title">${section.title}</div>
+                                <div class="section-meta">
+                                    <span><i class="fas fa-folder"></i> ${subsectionCount} subsección${subsectionCount !== 1 ? 'es' : ''}</span>
+                                </div>
+                            </div>
+                            <div class="section-arrow">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                ${renderSubsections(section.subsections)}
+                            </div>
+                        </div>
+                    `;
+
+                    accordion.appendChild(sectionElement);
+                }
+            });
+        }
+
+        // Renderizar subsecciones
+        function renderSubsections(subsections) {
+            if (!subsections || subsections.length === 0) {
+                return `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>Esta sección no contiene subsecciones disponibles</p>
+                    </div>
+                `;
+            }
+
+            let html = '<div class="subsection-list">';
+
+            subsections.forEach(sub => {
+                html += `
+                    <div class="subsection-item" id="subsection-${sub.id.replace('.', '-')}">
+                        <div class="subsection-header" onclick="toggleSubsection('${sub.id}')">
+                            <div class="subsection-number">${sub.id}</div>
+                            <div class="subsection-info">
+                                <div class="subsection-title">${sub.title}</div>
+                                <div class="subsection-meta">
+                                    <i class="fas fa-list"></i> ${sub.items.length} elemento${sub.items.length !== 1 ? 's' : ''}
+                                </div>
+                            </div>
+                            <div class="subsection-arrow">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="subsection-content-inner">
+                                ${renderItems(sub.items)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        // Renderizar items
+        function renderItems(items) {
+            if (!items || items.length === 0) {
+                return '<div class="empty-state"><p>Sin elementos disponibles</p></div>';
+            }
+
+            let html = '<div class="items-grid">';
+
+            items.forEach(item => {
+                const hasUrl = item.url !== null;
+                html += `
+                    <a href="${hasUrl ? item.url : '#'}"
+                       class="item-link ${!hasUrl ? 'disabled' : ''}"
+                       ${hasUrl ? 'target="_blank"' : ''}>
+                        <div class="item-icon">
+                            <i class="fas ${item.icon}"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">${item.id} ${item.title}</div>
+                            <div class="item-subtitle">
+                                ${hasUrl
+                                    ? '<i class="fas fa-external-link-alt"></i> Ver información'
+                                    : '<span class="no-link-badge">Sin enlace</span>'
+                                }
+                            </div>
+                        </div>
+                    </a>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        // Toggle sección
+        function toggleSection(sectionId) {
+            const sectionElement = document.getElementById(`section-${sectionId}`);
+            const isActive = sectionElement.classList.contains('active');
+
+            // Cerrar todas las secciones
+            document.querySelectorAll('.section-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Si no estaba activa, activarla
+            if (!isActive) {
+                sectionElement.classList.add('active');
+            }
+        }
+
+        // Toggle subsección
+        function toggleSubsection(subsectionId) {
+            const subsectionElement = document.getElementById(`subsection-${subsectionId.replace('.', '-')}`);
+            const isActive = subsectionElement.classList.contains('active');
+
+            // Cerrar todas las subsecciones del mismo nivel
+            subsectionElement.parentElement.querySelectorAll('.subsection-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Si no estaba activa, activarla
+            if (!isActive) {
+                subsectionElement.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLADESHI - Diagrama Entidad-Relacion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .entity {
+            background: linear-gradient(145deg, #1e1e30, #252540);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.1);
+            min-width: 280px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .entity:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(0,212,255,0.2);
+        }
+
+        .entity-header {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .entity-header .icon {
+            font-size: 1.5rem;
+        }
+
+        .entity-header h3 {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .entity-body {
+            padding: 15px;
+        }
+
+        .attribute {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .attribute:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .attribute-name {
+            flex: 1;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .attribute-type {
+            color: #888;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .badge-pk {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #000;
+        }
+
+        .badge-fk {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+        }
+
+        .badge-identity {
+            background: linear-gradient(135deg, #7b2cbf, #5a189a);
+            color: white;
+        }
+
+        /* Relaciones */
+        .relations-section {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .relations-section h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+
+        .relation-card {
+            background: linear-gradient(145deg, #1e1e30, #252540);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .relation-entity {
+            background: rgba(0,212,255,0.1);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(0,212,255,0.3);
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .relation-entity .table-name {
+            color: #00d4ff;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .relation-entity .column-name {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .relation-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #7b2cbf;
+        }
+
+        .relation-arrow .arrow {
+            font-size: 2rem;
+        }
+
+        .relation-arrow .fk-name {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .relation-type {
+            background: linear-gradient(135deg, #7b2cbf, #5a189a);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ER Diagram Visual */
+        .er-visual {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .er-visual h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .er-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .er-table {
+            background: #1e1e30;
+            border: 3px solid #00d4ff;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+
+        .er-table-header {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            color: white;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .er-table-body {
+            padding: 10px;
+        }
+
+        .er-field {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .er-field:last-child {
+            border-bottom: none;
+        }
+
+        .er-field-name {
+            color: #e0e0e0;
+        }
+
+        .er-field-name.pk {
+            color: #ffd700;
+        }
+
+        .er-field-name.fk {
+            color: #00d4ff;
+        }
+
+        .er-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #7b2cbf;
+        }
+
+        .er-connector .line {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            position: relative;
+        }
+
+        .er-connector .cardinality {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 5px 0;
+        }
+
+        /* Summary */
+        .summary {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(145deg, #1e1e30, #252540);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .summary-card .number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .summary-card .label {
+            color: #888;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #555;
+            margin-top: 50px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .diagram-container {
+                flex-direction: column;
+            }
+
+            .relation-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .er-diagram {
+                flex-direction: column;
+            }
+
+            .er-connector .line {
+                width: 3px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>PLADESHI</h1>
+        <p>Diagrama Entidad-Relacion | Esquema de Base de Datos</p>
+    </header>
+
+    <!-- Summary -->
+    <div class="summary">
+        <div class="summary-card">
+            <div class="number">4</div>
+            <div class="label">Tablas</div>
+        </div>
+        <div class="summary-card">
+            <div class="number">3</div>
+            <div class="label">Foreign Keys</div>
+        </div>
+        <div class="summary-card">
+            <div class="number">24</div>
+            <div class="label">Columnas</div>
+        </div>
+        <div class="summary-card">
+            <div class="number">4</div>
+            <div class="label">Primary Keys</div>
+        </div>
+    </div>
+
+    <!-- Entities -->
+    <div class="diagram-container">
+        <!-- Serie -->
+        <div class="entity">
+            <div class="entity-header">
+                <span class="icon">📊</span>
+                <h3>Serie</h3>
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attribute-name">SerieId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-pk">PK</span>
+                    <span class="badge badge-identity">IDENTITY</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">MMPCD</span>
+                    <span class="attribute-type">nvarchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">[2025] - [2040]</span>
+                    <span class="attribute-type">int</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cuadros -->
+        <div class="entity">
+            <div class="entity-header">
+                <span class="icon">📋</span>
+                <h3>Cuadros</h3>
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attribute-name">CuadrosId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-pk">PK</span>
+                    <span class="badge badge-identity">IDENTITY</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">Descripcion</span>
+                    <span class="attribute-type">nvarchar(255)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CuadroSerie -->
+        <div class="entity">
+            <div class="entity-header">
+                <span class="icon">🔗</span>
+                <h3>CuadroSerie</h3>
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attribute-name">CuadroSerieId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-pk">PK</span>
+                    <span class="badge badge-identity">IDENTITY</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">CuadrosId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-fk">FK</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">SerieId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-fk">FK</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metadatos -->
+        <div class="entity">
+            <div class="entity-header">
+                <span class="icon">🏷️</span>
+                <h3>Metadatos</h3>
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attribute-name">MetadatoId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-pk">PK</span>
+                    <span class="badge badge-identity">IDENTITY</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">SerieId</span>
+                    <span class="attribute-type">int</span>
+                    <span class="badge badge-fk">FK</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">Campo</span>
+                    <span class="attribute-type">nvarchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-name">Valor</span>
+                    <span class="attribute-type">nvarchar(MAX)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relations Section -->
+    <div class="relations-section">
+        <h2>Relaciones (Foreign Keys)</h2>
+
+        <div class="relation-card">
+            <div class="relation-entity">
+                <div class="table-name">CuadroSerie</div>
+                <div class="column-name">CuadrosId</div>
+            </div>
+            <div class="relation-arrow">
+                <div class="arrow">━━━━━━▶</div>
+                <div class="fk-name">FK_CuadroSerie_Cuadros</div>
+            </div>
+            <div class="relation-entity">
+                <div class="table-name">Cuadros</div>
+                <div class="column-name">CuadrosId</div>
+            </div>
+            <div class="relation-type">N : 1</div>
+        </div>
+
+        <div class="relation-card">
+            <div class="relation-entity">
+                <div class="table-name">CuadroSerie</div>
+                <div class="column-name">SerieId</div>
+            </div>
+            <div class="relation-arrow">
+                <div class="arrow">━━━━━━▶</div>
+                <div class="fk-name">FK_CuadroSerie_Serie</div>
+            </div>
+            <div class="relation-entity">
+                <div class="table-name">Serie</div>
+                <div class="column-name">SerieId</div>
+            </div>
+            <div class="relation-type">N : 1</div>
+        </div>
+
+        <div class="relation-card">
+            <div class="relation-entity">
+                <div class="table-name">Metadatos</div>
+                <div class="column-name">SerieId</div>
+            </div>
+            <div class="relation-arrow">
+                <div class="arrow">━━━━━━▶</div>
+                <div class="fk-name">FK_Metadatos_Serie</div>
+            </div>
+            <div class="relation-entity">
+                <div class="table-name">Serie</div>
+                <div class="column-name">SerieId</div>
+            </div>
+            <div class="relation-type">N : 1</div>
+        </div>
+    </div>
+
+    <!-- ER Diagram Visual - Catalogos Utiles -->
+    <div class="er-visual" id="catalogos-utiles-section">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+            <h2 style="margin: 0;">Modelo Entidad-Relacion Visual</h2>
+            <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">Esquema: UTILES</span>
+        </div>
+        <p style="text-align: center; color: #888; margin-bottom: 20px;">Servidor: senerspte.database.windows.net | Catalogos del sistema</p>
+
+        <div id="loading-catalogos" style="text-align: center; padding: 40px; color: #00d4ff;">
+            <div style="font-size: 2rem; margin-bottom: 10px;">&#8987;</div>
+            <p>Conectando al servidor y cargando estructura de tablas...</p>
+        </div>
+
+        <div id="error-catalogos" style="display: none; text-align: center; padding: 40px; color: #ff6b6b;">
+            <div style="font-size: 2rem; margin-bottom: 10px;">&#9888;</div>
+            <p id="error-message">Error al conectar con el servidor</p>
+        </div>
+
+        <div id="catalogos-container" style="display: none;">
+            <div class="diagram-container" id="entidades-utiles" style="justify-content: flex-start;">
+                <!-- Las entidades se generan dinamicamente -->
+            </div>
+
+            <svg id="svg-catalogos" viewBox="0 0 1400 800" style="width: 100%; max-width: 1400px; margin: 30px auto; display: block;">
+                <defs>
+                    <linearGradient id="gradUtiles1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#7b2cbf;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradUtiles2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glowUtiles">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <!-- El contenido SVG se genera dinamicamente -->
+            </svg>
+        </div>
+    </div>
+
+    <!-- ER Diagram Visual - PLADESHI -->
+    <div class="er-visual">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+            <h2 style="margin: 0;">Modelo Entidad-Relacion Visual</h2>
+            <span style="background: linear-gradient(135deg, #00d4ff, #7b2cbf); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);">Esquema: PLADESHI</span>
+        </div>
+
+        <svg viewBox="0 0 1000 500" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;">
+            <!-- Definiciones -->
+            <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#7b2cbf;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Lineas de conexion -->
+            <!-- CuadroSerie a Cuadros -->
+            <line x1="500" y1="250" x2="200" y2="120" stroke="url(#grad1)" stroke-width="3" filter="url(#glow)"/>
+            <!-- CuadroSerie a Serie -->
+            <line x1="500" y1="250" x2="800" y2="120" stroke="url(#grad1)" stroke-width="3" filter="url(#glow)"/>
+            <!-- Metadatos a Serie -->
+            <line x1="500" y1="400" x2="800" y2="120" stroke="url(#grad1)" stroke-width="3" filter="url(#glow)"/>
+
+            <!-- Cuadros Entity -->
+            <rect x="100" y="50" width="200" height="140" rx="10" fill="#1e1e30" stroke="url(#grad1)" stroke-width="3" filter="url(#glow)"/>
+            <rect x="100" y="50" width="200" height="40" rx="10" fill="url(#grad1)"/>
+            <text x="200" y="77" text-anchor="middle" fill="white" font-weight="bold" font-size="16">Cuadros</text>
+            <text x="120" y="110" fill="#ffd700" font-size="12">🔑 CuadrosId (PK)</text>
+            <text x="120" y="130" fill="#e0e0e0" font-size="12">📝 Descripcion</text>
+
+            <!-- Serie Entity -->
+            <rect x="700" y="50" width="200" height="140" rx="10" fill="#1e1e30" stroke="url(#grad1)" stroke-width="3" filter="url(#glow)"/>
+            <rect x="700" y="50" width="200" height="40" rx="10" fill="url(#grad1)"/>
+            <text x="800" y="77" text-anchor="middle" fill="white" font-weight="bold" font-size="16">Serie</text>
+            <text x="720" y="110" fill="#ffd700" font-size="12">🔑 SerieId (PK)</text>
+            <text x="720" y="130" fill="#e0e0e0" font-size="12">📊 MMPCD</text>
+            <text x="720" y="150" fill="#e0e0e0" font-size="12">📈 [2025] - [2040]</text>
+
+            <!-- CuadroSerie Entity (Tabla intermedia) -->
+            <rect x="400" y="200" width="200" height="120" rx="10" fill="#1e1e30" stroke="#7b2cbf" stroke-width="3" filter="url(#glow)"/>
+            <rect x="400" y="200" width="200" height="40" rx="10" fill="url(#grad1)"/>
+            <text x="500" y="227" text-anchor="middle" fill="white" font-weight="bold" font-size="16">CuadroSerie</text>
+            <text x="420" y="260" fill="#ffd700" font-size="12">🔑 CuadroSerieId (PK)</text>
+            <text x="420" y="280" fill="#00d4ff" font-size="12">🔗 CuadrosId (FK)</text>
+            <text x="420" y="300" fill="#00d4ff" font-size="12">🔗 SerieId (FK)</text>
+
+            <!-- Metadatos Entity -->
+            <rect x="400" y="350" width="200" height="130" rx="10" fill="#1e1e30" stroke="url(#grad1)" stroke-width="3" filter="url(#glow)"/>
+            <rect x="400" y="350" width="200" height="40" rx="10" fill="url(#grad1)"/>
+            <text x="500" y="377" text-anchor="middle" fill="white" font-weight="bold" font-size="16">Metadatos</text>
+            <text x="420" y="410" fill="#ffd700" font-size="12">🔑 MetadatoId (PK)</text>
+            <text x="420" y="430" fill="#00d4ff" font-size="12">🔗 SerieId (FK)</text>
+            <text x="420" y="450" fill="#e0e0e0" font-size="12">🏷️ Campo, Valor</text>
+
+            <!-- Cardinalidad -->
+            <text x="300" y="170" fill="#888" font-size="11">N</text>
+            <text x="170" y="170" fill="#888" font-size="11">1</text>
+
+            <text x="620" y="170" fill="#888" font-size="11">N</text>
+            <text x="730" y="170" fill="#888" font-size="11">1</text>
+
+            <text x="620" y="280" fill="#888" font-size="11">N</text>
+            <text x="730" y="230" fill="#888" font-size="11">1</text>
+        </svg>
+    </div>
+
+    <!-- Descripcion del modelo -->
+    <div class="relations-section" style="margin-top: 30px;">
+        <h2>Descripcion del Modelo</h2>
+        <div style="color: #e0e0e0; line-height: 1.8; padding: 20px;">
+            <p><strong style="color: #00d4ff;">Serie:</strong> Tabla principal que almacena las series de datos energeticos con proyecciones anuales (2025-2040).</p>
+            <br>
+            <p><strong style="color: #00d4ff;">Cuadros:</strong> Representa agrupaciones o vistas de datos con una descripcion.</p>
+            <br>
+            <p><strong style="color: #00d4ff;">CuadroSerie:</strong> Tabla intermedia que implementa la relacion muchos-a-muchos entre Cuadros y Serie. Un cuadro puede contener multiples series.</p>
+            <br>
+            <p><strong style="color: #00d4ff;">Metadatos:</strong> Almacena informacion adicional (clave-valor) asociada a cada serie, como fuente de datos, fecha de actualizacion, notas, etc.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Esquemas PLADESHI y utiles | Base de datos: senerspte.database.windows.net</p>
+    </footer>
+
+    <script>
+        // Configuracion del servidor API - detecta automaticamente produccion o desarrollo
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000'
+            : window.location.origin;
+
+        // Cargar estructura de tablas del esquema utiles
+        async function cargarCatalogosUtiles() {
+            const loadingEl = document.getElementById('loading-catalogos');
+            const errorEl = document.getElementById('error-catalogos');
+            const containerEl = document.getElementById('catalogos-container');
+            const entidadesEl = document.getElementById('entidades-utiles');
+            const svgEl = document.getElementById('svg-catalogos');
+
+            try {
+                // Cargar estructura y relaciones en paralelo
+                const [responseEstructura, responseRelaciones] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/utiles/estructura`),
+                    fetch(`${API_BASE_URL}/api/utiles/relaciones`)
+                ]);
+
+                const response = responseEstructura;
+                const relaciones = await responseRelaciones.json();
+                if (!response.ok) {
+                    throw new Error('Error al obtener datos del servidor');
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Ocultar loading y mostrar contenedor
+                loadingEl.style.display = 'none';
+                containerEl.style.display = 'block';
+
+                // Iconos para cada tabla
+                const iconos = {
+                    'CAT_ENTIDAD_FEDERATIVA': '🗺️',
+                    'CAT_LOCALIDAD': '📍',
+                    'CAT_MUNICIPIO': '🏘️',
+                    'CAT_TECNOLOGIA': '⚡',
+                    'CAT_TEMA': '📚',
+                    'CAT_UNIDAD': '📏',
+                    'CAT_UNIDAD_RESPONSABLE': '🏢'
+                };
+
+                // Crear mapa de FKs desde relaciones
+                const fkMap = {};
+                for (const rel of relaciones) {
+                    if (!fkMap[rel.tabla_origen]) fkMap[rel.tabla_origen] = {};
+                    fkMap[rel.tabla_origen][rel.columna_origen] = {
+                        tabla_destino: rel.tabla_destino,
+                        columna_destino: rel.columna_destino
+                    };
+                }
+
+                // Generar tarjetas de entidades
+                let htmlEntidades = '';
+                for (const [nombreTabla, columnas] of Object.entries(data)) {
+                    htmlEntidades += `
+                        <div class="entity" style="border: 2px solid #10b981;">
+                            <div class="entity-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                <span class="icon">${iconos[nombreTabla] || '📋'}</span>
+                                <h3>${nombreTabla}</h3>
+                            </div>
+                            <div class="entity-body">
+                    `;
+
+                    for (const col of columnas) {
+                        // Verificar si es FK usando el mapa de relaciones
+                        const esFK = fkMap[nombreTabla] && fkMap[nombreTabla][col.nombre];
+
+                        let badges = '';
+                        if (col.es_pk) badges += '<span class="badge badge-pk">PK</span>';
+                        if (esFK) badges += '<span class="badge badge-fk">FK</span>';
+
+                        let tipoStr = col.tipo;
+                        if (col.longitud && col.longitud > 0) tipoStr += `(${col.longitud})`;
+
+                        htmlEntidades += `
+                            <div class="attribute">
+                                <span class="attribute-name">${col.nombre}</span>
+                                <span class="attribute-type">${tipoStr}</span>
+                                ${badges}
+                            </div>
+                        `;
+                    }
+
+                    htmlEntidades += `
+                            </div>
+                        </div>
+                    `;
+                }
+                entidadesEl.innerHTML = htmlEntidades;
+
+                // Generar diagrama SVG
+                const tablas = Object.keys(data);
+                const posiciones = {
+                    'CAT_ENTIDAD_FEDERATIVA': { x: 100, y: 50 },
+                    'CAT_MUNICIPIO': { x: 400, y: 50 },
+                    'CAT_LOCALIDAD': { x: 700, y: 50 },
+                    'CAT_TECNOLOGIA': { x: 1050, y: 50 },
+                    'CAT_TEMA': { x: 100, y: 400 },
+                    'CAT_UNIDAD': { x: 400, y: 400 },
+                    'CAT_UNIDAD_RESPONSABLE': { x: 750, y: 400 }
+                };
+
+                let svgContent = '';
+
+                // Dibujar lineas de relacion usando los datos de relaciones
+                const coloresRelacion = ['#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#84cc16'];
+                let colorIndex = 0;
+
+                for (const rel of relaciones) {
+                    const posOrigen = posiciones[rel.tabla_origen];
+                    const posDestino = posiciones[rel.tabla_destino];
+
+                    if (posOrigen && posDestino) {
+                        const color = coloresRelacion[colorIndex % coloresRelacion.length];
+                        colorIndex++;
+
+                        // Calcular puntos de conexion (bordes de las cajas)
+                        const x1 = posOrigen.x + 130;
+                        const y1 = posOrigen.y + 35;
+                        const x2 = posDestino.x + 130;
+                        const y2 = posDestino.y + 35;
+
+                        // Calcular punto de control para curva
+                        const midX = (x1 + x2) / 2;
+                        const midY = Math.min(y1, y2) - 60;
+
+                        // Dibujar curva con flecha
+                        svgContent += `
+                            <defs>
+                                <marker id="arrowhead-${rel.fk_name}" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <polygon points="0 0, 12 4, 0 8" fill="${color}"/>
+                                </marker>
+                            </defs>
+                            <path d="M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}"
+                                  stroke="${color}" stroke-width="4" fill="none"
+                                  marker-end="url(#arrowhead-${rel.fk_name})"
+                                  style="filter: drop-shadow(0 0 6px ${color})"/>
+                            <rect x="${midX - 50}" y="${midY - 12}" width="100" height="20" rx="10"
+                                  fill="rgba(30,30,48,0.95)" stroke="${color}" stroke-width="2"/>
+                            <text x="${midX}" y="${midY + 3}"
+                                  fill="${color}" font-size="10" font-weight="bold" text-anchor="middle">${rel.columna_origen}</text>
+                        `;
+                    }
+                }
+
+                // Dibujar tablas
+                for (const [nombreTabla, columnas] of Object.entries(data)) {
+                    const pos = posiciones[nombreTabla];
+                    if (!pos) continue;
+
+                    const alturaBase = 50;
+                    const alturaPorColumna = 20;
+                    const altura = alturaBase + Math.min(columnas.length, 5) * alturaPorColumna;
+
+                    svgContent += `
+                        <rect x="${pos.x}" y="${pos.y}" width="260" height="${altura}" rx="10"
+                              fill="#1e1e30" stroke="url(#gradUtiles2)" stroke-width="3" filter="url(#glowUtiles)"/>
+                        <rect x="${pos.x}" y="${pos.y}" width="260" height="35" rx="10"
+                              fill="url(#gradUtiles2)"/>
+                        <text x="${pos.x + 130}" y="${pos.y + 24}" text-anchor="middle"
+                              fill="white" font-weight="bold" font-size="12">${nombreTabla.replace('CAT_', '')}</text>
+                    `;
+
+                    // Primeras 5 columnas
+                    const colsMostrar = columnas.slice(0, 5);
+                    colsMostrar.forEach((col, idx) => {
+                        const yPos = pos.y + 55 + idx * 20;
+                        let color = '#e0e0e0';
+                        let prefijo = '';
+                        const esFK = fkMap[nombreTabla] && fkMap[nombreTabla][col.nombre];
+
+                        if (col.es_pk) { color = '#ffd700'; prefijo = '🔑 '; }
+                        else if (esFK) { color = '#00d4ff'; prefijo = '🔗 '; }
+
+                        svgContent += `
+                            <text x="${pos.x + 15}" y="${yPos}" fill="${color}" font-size="11">
+                                ${prefijo}${col.nombre}
+                            </text>
+                        `;
+                    });
+
+                    if (columnas.length > 5) {
+                        svgContent += `
+                            <text x="${pos.x + 15}" y="${pos.y + 55 + 5 * 20}" fill="#888" font-size="10">
+                                ... +${columnas.length - 5} columnas mas
+                            </text>
+                        `;
+                    }
+                }
+
+                svgEl.innerHTML = svgEl.innerHTML.split('</defs>')[0] + '</defs>' + svgContent;
+
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'block';
+                document.getElementById('error-message').textContent = error.message;
+                console.error('Error cargando catalogos:', error);
+            }
+        }
+
+        // Cargar al iniciar
+        document.addEventListener('DOMContentLoaded', cargarCatalogosUtiles);
+    </script>
+</body>
+</html>

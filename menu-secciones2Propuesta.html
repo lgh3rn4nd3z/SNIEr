@@ -1,0 +1,1862 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNIEr - Sistema Nacional de Información Energética</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Colores oficiales del Gobierno de México */
+            --gob-guinda: #691C32;
+            --gob-guinda-dark: #4a1423;
+            --gob-guinda-light: #8B2346;
+            --gob-dorado: #BC955C;
+            --gob-dorado-light: #D4AF7A;
+            --gob-verde: #235B4E;
+            --gob-verde-light: #2D7366;
+            --gob-blanco: #FFFFFF;
+            --gob-gris-claro: #F5F5F5;
+            --gob-gris: #6D6D6D;
+            --gob-negro: #1A1A1A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--gob-gris-claro);
+            min-height: 100vh;
+        }
+
+        /* Header Gobierno */
+        .gob-header {
+            background-color: var(--gob-guinda);
+            padding: 0;
+        }
+
+        .gob-header-top {
+            background-color: var(--gob-guinda-dark);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gob-header-top a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .gob-header-top a:hover {
+            opacity: 1;
+        }
+
+        .gob-header-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gob-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gob-logo-img {
+            height: 50px;
+        }
+
+        .gob-logo-text {
+            color: var(--gob-blanco);
+            font-size: 0.9rem;
+            line-height: 1.3;
+            border-left: 2px solid var(--gob-dorado);
+            padding-left: 15px;
+        }
+
+        .gob-logo-text strong {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .gob-nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        .gob-nav a {
+            color: var(--gob-blanco);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .gob-nav a:hover {
+            border-bottom-color: var(--gob-dorado);
+        }
+
+        /* Barra dorada */
+        .gob-gold-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--gob-dorado) 0%, var(--gob-dorado-light) 50%, var(--gob-dorado) 100%);
+        }
+
+        /* Título de la página */
+        .page-title {
+            background: linear-gradient(135deg, var(--gob-verde) 0%, var(--gob-verde-light) 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .page-title h1 {
+            color: var(--gob-blanco);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .page-title .article-reference {
+            max-width: 1000px;
+            margin: 20px auto -40px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            background: var(--gob-blanco);
+            padding: 25px 35px;
+            border-radius: 12px;
+            border-left: 6px solid var(--gob-dorado);
+            color: var(--gob-negro);
+            text-align: left;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+            transform: translateY(20px);
+        }
+
+        .page-title .article-reference strong {
+            font-size: 1.2rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            color: var(--gob-blanco);
+            padding: 6px 16px;
+            border-radius: 6px;
+            margin-right: 10px;
+            box-shadow: 0 3px 8px rgba(105, 28, 50, 0.3);
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 30px 30px;
+            min-height: 100vh;
+        }
+
+        /* Barra de navegación */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 18px 24px;
+            background: var(--gob-blanco);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gob-gris);
+            font-size: 1.05rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-breadcrumb-item.clickable {
+            cursor: pointer;
+        }
+
+        .nav-breadcrumb-item.clickable:hover {
+            color: var(--gob-guinda);
+            background: rgba(105, 28, 50, 0.08);
+        }
+
+        .nav-breadcrumb-item.active {
+            color: var(--gob-blanco);
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            font-weight: 600;
+        }
+
+        .nav-breadcrumb-separator {
+            color: var(--gob-gris);
+            font-size: 0.8rem;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--gob-gris-claro);
+            color: var(--gob-gris);
+            border: 1px solid #ddd;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+            border-color: var(--gob-guinda);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Título de vista */
+        .view-title {
+            margin-bottom: 25px;
+            padding: 20px 25px;
+            background: var(--gob-blanco);
+            border-radius: 12px;
+            border-left: 5px solid var(--gob-guinda);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .view-title h2 {
+            color: var(--gob-guinda);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .view-title p {
+            color: var(--gob-gris);
+            font-size: 0.9rem;
+        }
+
+        /* Grid de tarjetas */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        /* Grid específico para Sección II - tarjetas más anchas */
+        .cards-grid.section-ii-grid {
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+        }
+
+        .cards-grid.section-ii-grid .subsection-card-title {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            min-height: 85px;
+        }
+
+        /* Grid para diagnóstico - 4 tarjetas por renglón */
+        #subsections-grid-secondary {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        #subsections-grid-secondary .subsection-card-title {
+            font-size: 1rem;
+            min-height: auto;
+        }
+
+        /* Grid específico para secciones principales (renglones) */
+        .sections-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Separador visual */
+        .sections-separator {
+            margin: 20px 0 10px;
+            padding: 10px 0;
+            border-top: 2px dashed #ccc;
+        }
+
+        .sections-separator span {
+            background: var(--gob-gris-claro);
+            padding: 5px 15px;
+            color: var(--gob-gris);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+
+        /* Tarjetas de sección en forma de renglón */
+        .section-card {
+            background: var(--gob-blanco);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: stretch;
+            border-left: 4px solid var(--gob-guinda);
+        }
+
+        .section-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 16px rgba(105, 28, 50, 0.15);
+            border-color: var(--gob-guinda);
+        }
+
+        .section-card-header {
+            width: 60px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gob-guinda) 0%, var(--gob-guinda-light) 100%);
+            flex-shrink: 0;
+        }
+
+        .section-card-header::before {
+            display: none;
+        }
+
+        .section-card-header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .section-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--gob-blanco);
+        }
+
+        .section-card-body {
+            padding: 15px 20px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-card-title {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--gob-negro);
+            line-height: 1.4;
+            margin-bottom: 0;
+            min-height: auto;
+            flex: 1;
+        }
+
+        .section-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-top: 0;
+            border-top: none;
+            margin-left: auto;
+            padding-left: 15px;
+        }
+
+        .section-card-count {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gob-gris);
+            font-size: 0.8rem;
+            background: var(--gob-gris-claro);
+            padding: 5px 12px;
+            border-radius: 15px;
+        }
+
+        .section-card-count i {
+            color: var(--gob-guinda);
+        }
+
+        .section-card-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gob-gris-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gob-guinda);
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover .section-card-arrow {
+            background: var(--gob-guinda);
+            color: var(--gob-blanco);
+        }
+
+        /* Tarjetas de subsección (1.1, 1.2) */
+        .subsection-card {
+            background: var(--gob-blanco);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .subsection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(35, 91, 78, 0.15);
+            border-color: var(--gob-verde);
+        }
+
+        .subsection-card-header {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .subsection-card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.8) 0%, rgba(45, 115, 102, 0.6) 100%);
+            z-index: 1;
+        }
+
+        .subsection-card-header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 0 20px;
+        }
+
+        .subsection-card-number {
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gob-blanco);
+        }
+
+        .subsection-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--gob-blanco);
+        }
+
+        .subsection-card-body {
+            padding: 18px 22px;
+        }
+
+        .subsection-card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--gob-negro);
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .subsection-card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .subsection-card-count {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gob-gris);
+            font-size: 0.85rem;
+        }
+
+        .subsection-card-count i {
+            color: var(--gob-verde);
+        }
+
+        .subsection-card-arrow {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--gob-gris-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gob-verde);
+            transition: all 0.3s ease;
+        }
+
+        .subsection-card:hover .subsection-card-arrow {
+            background: var(--gob-verde);
+            color: var(--gob-blanco);
+        }
+
+        /* Tarjetas de item (1.1.1, 1.1.2) */
+        .item-card {
+            background: var(--gob-blanco);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            text-decoration: none;
+            display: block;
+        }
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(188, 149, 92, 0.2);
+            border-color: var(--gob-dorado);
+        }
+
+        .item-card-image {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .item-card-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        .item-card-image i {
+            color: var(--gob-blanco);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Categorías de imágenes */
+        .card-hidrocarburos .item-card-image,
+        .card-hidrocarburos .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400&q=80');
+        }
+        .card-hidrocarburos .item-card-image::before,
+        .card-hidrocarburos .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.75) 0%, rgba(139, 35, 70, 0.6) 100%);
+        }
+
+        .card-electrico .item-card-image,
+        .card-electrico .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&q=80');
+        }
+        .card-electrico .item-card-image::before,
+        .card-electrico .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.75) 0%, rgba(45, 115, 102, 0.6) 100%);
+        }
+
+        .card-renovables .item-card-image,
+        .card-renovables .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80');
+        }
+        .card-renovables .item-card-image::before,
+        .card-renovables .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(139, 105, 20, 0.75) 0%, rgba(188, 149, 92, 0.6) 100%);
+        }
+
+        .card-balance .item-card-image,
+        .card-balance .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80');
+        }
+        .card-balance .item-card-image::before,
+        .card-balance .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.8) 0%, rgba(45, 115, 102, 0.65) 100%);
+        }
+
+        .card-mercado .item-card-image,
+        .card-mercado .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&q=80');
+        }
+        .card-mercado .item-card-image::before,
+        .card-mercado .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.8) 0%, rgba(139, 35, 70, 0.65) 100%);
+        }
+
+        .card-innovacion .item-card-image,
+        .card-innovacion .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80');
+        }
+        .card-innovacion .item-card-image::before,
+        .card-innovacion .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.8) 0%, rgba(45, 115, 102, 0.65) 100%);
+        }
+
+        .card-planeacion .item-card-image,
+        .card-planeacion .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80');
+        }
+        .card-planeacion .item-card-image::before,
+        .card-planeacion .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(139, 105, 20, 0.8) 0%, rgba(188, 149, 92, 0.65) 100%);
+        }
+
+        .card-certificados .item-card-image,
+        .card-certificados .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=400&q=80');
+        }
+        .card-certificados .item-card-image::before,
+        .card-certificados .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.75) 0%, rgba(45, 115, 102, 0.6) 100%);
+        }
+
+        /* Constitución - imagen de documento constitucional/edificio gubernamental */
+        .card-constitucion .item-card-image,
+        .card-constitucion .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80');
+        }
+        .card-constitucion .item-card-image::before,
+        .card-constitucion .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(105, 28, 50, 0.85) 0%, rgba(139, 35, 70, 0.7) 100%);
+        }
+
+        /* Legislación Nacional - imagen de leyes/libros jurídicos */
+        .card-legislacion .item-card-image,
+        .card-legislacion .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&q=80');
+        }
+        .card-legislacion .item-card-image::before,
+        .card-legislacion .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(35, 91, 78, 0.85) 0%, rgba(45, 115, 102, 0.7) 100%);
+        }
+
+        /* Normas Oficiales - imagen de documentos/certificación */
+        .card-normas .item-card-image,
+        .card-normas .subsection-card-header {
+            background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&q=80');
+        }
+        .card-normas .item-card-image::before,
+        .card-normas .subsection-card-header::before {
+            background: linear-gradient(135deg, rgba(188, 149, 92, 0.85) 0%, rgba(139, 105, 20, 0.7) 100%);
+        }
+
+        .item-card-body {
+            padding: 14px 16px;
+        }
+
+        .item-card-title {
+            color: var(--gob-negro);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .item-card-subtitle {
+            color: var(--gob-gris);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .item-card-subtitle i {
+            color: var(--gob-guinda);
+            font-size: 0.7rem;
+        }
+
+        .item-card-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .no-link {
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        /* Vistas */
+        .view {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Footer Gobierno */
+        .gob-footer {
+            background: var(--gob-guinda-dark);
+            padding: 40px 30px 20px;
+            margin-top: 40px;
+        }
+
+        .gob-footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .gob-footer-section h4 {
+            color: var(--gob-dorado);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gob-footer-section p,
+        .gob-footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            text-decoration: none;
+        }
+
+        .gob-footer-section a:hover {
+            color: var(--gob-dorado);
+        }
+
+        .gob-footer-bottom {
+            max-width: 1400px;
+            margin: 30px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .gob-footer-bottom p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gob-header-main {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .gob-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 40px 15px 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .view-title h2 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Gobierno de México -->
+    <header class="gob-header">
+        <div class="gob-header-top">
+            <a href="#">gob.mx</a>
+            <a href="#">Trámites</a>
+            <a href="#">Gobierno</a>
+            <a href="#">Contacto</a>
+        </div>
+        <div class="gob-header-main">
+            <div class="gob-logo">
+                <svg class="gob-logo-img" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="10" y="35" fill="#BC955C" font-family="Montserrat" font-weight="700" font-size="28">GOB</text>
+                    <text x="75" y="35" fill="#FFFFFF" font-family="Montserrat" font-weight="300" font-size="28">.MX</text>
+                </svg>
+                <div class="gob-logo-text">
+                    <strong>Secretaría de Energía</strong>
+                    Sistema Nacional de Información Energética
+                </div>
+            </div>
+            <nav class="gob-nav">
+                <a href="https://qa-ti.energia.gob.mx/snien/public/inicio">Inicio</a>
+            </nav>
+        </div>
+    </header>
+    <div class="gob-gold-bar"></div>
+
+    <!-- Título de la página -->
+    <div class="page-title">
+        <h1><i class="fas fa-database"></i> Contenido del Sistema de Información</h1>
+        <p class="article-reference" style="text-align: center; font-weight: bold;">Reglamento de la ley de planeación y transición energética</p>
+        <p class="article-reference"><strong>Artículo 69.</strong> El Sistema Nacional de Información Energética debe concentrar, integrar, organizar, actualizar y, en su caso, difundir los registros de información</p>
+    </div>
+
+    <div class="container">
+        <!-- Barra de navegación -->
+        <div class="nav-bar">
+            <div class="nav-breadcrumb" id="breadcrumb">
+                <div class="nav-breadcrumb-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Secciones</span>
+                </div>
+            </div>
+            <button class="nav-btn" id="btnBack" onclick="goBack()" disabled>
+                <i class="fas fa-arrow-left"></i>
+                Regresar
+            </button>
+        </div>
+
+        <!-- Vista 1: Secciones Principales (I, II, III) -->
+        <div class="view active" id="sections-view">
+            <div class="cards-grid" id="sections-grid"></div>
+        </div>
+
+        <!-- Vista 2: Subsecciones (1.1, 1.2, etc.) -->
+        <div class="view" id="subsections-view">
+            <div class="view-title" id="subsections-title">
+                <h2><i class="fas fa-folder-open"></i> <span id="subsections-title-text">Subsecciones</span></h2>
+                <p id="subsections-description">Selecciona una subsección para ver sus elementos</p>
+            </div>
+            <div class="cards-grid" id="subsections-grid"></div>
+            <!-- Separador y segundo grid para subsecciones adicionales (2.6+) -->
+            <div id="subsections-separator" class="sections-separator" style="display: none;">
+                <span>Diagnóstico</span>
+            </div>
+            <div class="cards-grid" id="subsections-grid-secondary" style="display: none;"></div>
+        </div>
+
+        <!-- Vista 3: Items (1.1.1, 1.1.2, etc.) -->
+        <div class="view" id="items-view">
+            <div class="view-title" id="items-title">
+                <h2><i class="fas fa-list"></i> <span id="items-title-text">Elementos</span></h2>
+                <p id="items-description">Selecciona un elemento para ver su información</p>
+            </div>
+            <div class="cards-grid" id="items-grid"></div>
+        </div>
+    </div>
+
+    <!-- Footer Gobierno de México -->
+    <footer class="gob-footer">
+        <div class="gob-footer-content">
+            <div class="gob-footer-section">
+                <h4>Enlaces</h4>
+                <p><a href="#">Datos Abiertos</a></p>
+                <p><a href="#">Publicaciones Oficiales</a></p>
+                <p><a href="#">Marco Jurídico</a></p>
+                <p><a href="#">Plataforma Nacional de Transparencia</a></p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>¿Qué es gob.mx?</h4>
+                <p>Es el portal único de trámites, información y participación ciudadana.</p>
+                <p><a href="#">Conoce más sobre el portal</a></p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>Contacto</h4>
+                <p>Secretaría de Energía</p>
+                <p>Insurgentes sur 20, Col. Roma Norte</p>
+                <p>Ciudad de México, C.P. 03100</p>
+            </div>
+            <div class="gob-footer-section">
+                <h4>Síguenos</h4>
+                <p><a href="#"><i class="fab fa-facebook"></i> Facebook</a></p>
+                <p><a href="#"><i class="fab fa-twitter"></i> Twitter</a></p>
+                <p><a href="#"><i class="fab fa-youtube"></i> YouTube</a></p>
+            </div>
+        </div>
+        <div class="gob-footer-bottom">
+            <p>Sistema Nacional de Información Energética - Secretaría de Energía | Gobierno de México</p>
+        </div>
+    </footer>
+
+    <script>
+        // Datos - Solo secciones I, II, III
+        const sectionsData = [
+            {
+                id: 1,
+                number: "I",
+                icon: "fa-oil-well",
+                image: "https://images.unsplash.com/photo-1513828583688-c52646db42da?w=600&q=80",
+                title: "El inventario y el potencial de los recursos renovables, así como la estimación de las Reservas, la relación entre producción y Reservas y los Recursos Prospectivos y contingentes de Hidrocarburos",
+                subsections: [
+                    {
+                        id: "1.1",
+                        title: "Infraestructura de hidrocarburos",
+                        icon: "fa-industry",
+                        cardClass: "card-hidrocarburos",
+                        items: [
+                            { id: "1.1.1", title: "Exploración", icon: "fa-search-location", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/exploracion" },
+                            { id: "1.1.2", title: "Producción", icon: "fa-oil-can", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/produccion" },
+                            { id: "1.1.3", title: "Refinación", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/refinacion" },
+                            { id: "1.1.4", title: "Procesamiento de gas natural", icon: "fa-burn", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/procesamiento-gas" },
+                            { id: "1.1.5", title: "Almacenamiento", icon: "fa-warehouse", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/almacenamiento" },
+                            { id: "1.1.6", title: "Transporte", icon: "fa-truck-moving", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/transporte" },
+                            { id: "1.1.7", title: "Distribución", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/distribucion" },
+                            { id: "1.1.8", title: "Comercialización", icon: "fa-handshake", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/comercializacion" },
+                            { id: "1.1.9", title: "Comercio exterior", icon: "fa-globe-americas", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/comercio-exterior" },
+                            { id: "1.1.10", title: "Prospectivas", icon: "fa-chart-line", url: null },
+                            { id: "1.1.11", title: "Contingentes", icon: "fa-exclamation-triangle", url: null }
+                        ]
+                    },
+                    {
+                        id: "1.2",
+                        title: "Infraestructura del sector eléctrico",
+                        icon: "fa-bolt",
+                        cardClass: "card-electrico",
+                        items: [
+                            { id: "1.2.1", title: "Centrales eléctricas del SEN", icon: "fa-building", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/centrales-sen" },
+                            { id: "1.2.2", title: "Red Nacional de Transmisión", icon: "fa-network-wired", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/red-transmision" },
+                            { id: "1.2.3", title: "Redes Generales de Distribución", icon: "fa-sitemap", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/redes-distribucion" },
+                            { id: "1.2.4", title: "Centrales no interconectadas", icon: "fa-plug", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/centrales-no-interconectadas" },
+                            { id: "1.2.5", title: "Generación Distribuida", icon: "fa-solar-panel", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/sector-electrico/generacion-distribuida" },
+                            { id: "1.2.6", title: "Subestaciones eléctricas", icon: "fa-charging-station", url: null }
+                        ]
+                    },
+                    {
+                        id: "1.3",
+                        title: "Otra Infraestructura",
+                        icon: "fa-leaf",
+                        cardClass: "card-renovables",
+                        items: [
+                            { id: "1.3.1", title: "Calentadores solares de agua", icon: "fa-sun", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/calentadores-solares" },
+                            { id: "1.3.2", title: "Estufas eficientes de leña", icon: "fa-fire", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/estufas-lena" },
+                            { id: "1.3.3", title: "Sistemas geotérmicos de usos diversos", icon: "fa-mountain", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/sistemas-geotermicos" },
+                            { id: "1.3.4", title: "Sistemas térmicos de biomasa", icon: "fa-seedling", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/otra/sistemas-biomasa" }
+                        ]
+                    },
+                    {
+                        id: "1.4",
+                        title: "Diagnóstico sector hidrocarburos",
+                        icon: "fa-oil-well",
+                        cardClass: "card-hidrocarburos",
+                        items: [
+                            { id: "1.4.1", title: "Reservas", icon: "fa-database", url: "https://qa-ti.energia.gob.mx/snien/public/diagnostico-energetico/hidrocarburos/reservas" },
+                            { id: "1.4.2", title: "Producción", icon: "fa-industry" }
+                        ]
+                    },
+                    {
+                        id: "1.5",
+                        title: "Potenciales reservas hidrocarburos",
+                        icon: "fa-oil-well",
+                        cardClass: "card-hidrocarburos",
+                        items: [
+                            { id: "1.5.1", title: "Hidrocarburos líquidos", icon: "fa-tint", url: null },
+                            { id: "1.5.2", title: "Gas natural", icon: "fa-fire-alt", url: null }
+                        ]
+                    },
+                    {
+                        id: "1.6",
+                        title: "Potenciales renovables",
+                        icon: "fa-leaf",
+                        cardClass: "card-renovables",
+                        items: [
+                            { id: "1.6.1", title: "Solar", icon: "fa-sun", url: null },
+                            { id: "1.6.2", title: "Eólico", icon: "fa-wind", url: null },
+                            { id: "1.6.3", title: "Hidráulicos", icon: "fa-water", url: null },
+                            { id: "1.6.4", title: "Biomasa", icon: "fa-seedling", url: null }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                number: "II",
+                icon: "fa-chart-bar",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80",
+                title: "Registros con información estadística sobre el origen y destino de la energía, situación del Sistema Energético, avances en proyectos, innovación y Justicia Energética",
+                subsections: [
+                    {
+                        id: "2 a)",
+                        title: "El origen y el destino de la energía en los procesos y actividades para su exploración, extracción, refinación, transporte, almacenamiento, distribución y consumo final",
+                        icon: "fa-balance-scale",
+                        cardClass: "card-balance",
+                        items: [
+                            { id: "2.1.1", title: "Balances históricos", icon: "fa-history", url: "https://qa-ti.energia.gob.mx/snien/public/balance-nacional" },
+                            { id: "2.1.2", title: "Producción de energía primaria", icon: "fa-chart-pie", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/produccion-primaria" },
+                            { id: "2.1.3", title: "Oferta Interna Bruta", icon: "fa-chart-pie", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/oferta-interna-bruta" },
+                            { id: "2.1.4", title: "Refinación", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/refinacion" },
+                            { id: "2.1.5", title: "Procesamiento de gas natural", icon: "fa-burn", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/procesamiento-gas" },
+                            { id: "2.1.6", title: "Generación eléctrica", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/balance-nacional" },
+                            { id: "2.1.7", title: "Almacenamiento", icon: "fa-warehouse", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/almacenamiento" },
+                            { id: "2.1.8", title: "Transporte y transmisión", icon: "fa-truck-moving", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/transporte-transmision" },
+                            { id: "2.1.9", title: "Distribución", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/distribucion" },
+                            { id: "2.1.10", title: "Consumo final", icon: "fa-users", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/consumo-final" },
+                            { id: "2.1.11", title: "Aprovechamiento directo", icon: "fa-hand-holding-water", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/aprovechamiento-directo" }
+                        ]
+                    },
+                    {
+                        id: "2 b)",
+                        title: "La situación del Sistema Energético, incluyendo el Sistema Eléctrico Nacional y el Mercado Eléctrico Mayorista, así como del sector hidrocarburos",
+                        icon: "fa-store",
+                        cardClass: "card-mercado",
+                        items: [
+                            { id: "2.2.1", title: "Electricidad - MEM", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/mem" },
+                            { id: "2.2.2", title: "Electricidad - Tarifas del MEM", icon: "fa-tags", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-mem" },
+                            { id: "2.2.3", title: "Electricidad - Tarifas usuario finales", icon: "fa-file-invoice-dollar", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-usuarios" },
+                            { id: "2.2.4", title: "Certificados de Energías Limpias", icon: "fa-certificate", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" },
+                            { id: "2.2.5", title: "Gasolina", icon: "fa-gas-pump", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/gasolina" },
+                            { id: "2.2.6", title: "Diesel", icon: "fa-tint", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/diesel" },
+                            { id: "2.2.7", title: "Gas natural", icon: "fa-fire-alt", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/gas-natural" },
+                            { id: "2.2.8", title: "GLP", icon: "fa-fire", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/glp" },
+                            { id: "2.2.9", title: "Otros", icon: "fa-ellipsis-h", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/otros" }
+                        ]
+                    },
+                    {
+                        id: "2 c)",
+                        title: "El avance en el desarrollo de proyectos, programas y acciones, así como el cumplimiento de estrategias, líneas de acción, indicadores y metas de los Instrumentos de Planeación del Sector Energético",
+                        icon: "fa-tasks",
+                        cardClass: "card-innovacion",
+                        items: [
+                            { id: "2.3.1", title: "Proyectos", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/proyectos-impulsados" },
+                            { id: "2.3.2", title: "Programas", icon: "fa-clipboard-list", url: null },
+                            { id: "2.3.3", title: "Indicadores", icon: "fa-chart-line", url: null },
+                            { id: "2.3.4", title: "Metas de los instrumentos de Planeación", icon: "fa-bullseye", url: null },
+                            { id: "2.3.5", title: "Instrumentos de planeación", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/instrumentos" }
+                        ]
+                    },
+                    {
+                        id: "2 d)",
+                        title: "La información relevante de proyectos en desarrollo y concluidos en el país orientados a la innovación, desarrollo tecnológico y formación de recursos humanos en materia de Transición Energética e Hidrocarburos",
+                        icon: "fa-lightbulb",
+                        cardClass: "card-innovacion",
+                        items: [
+                            { id: "2.4.1", title: "Proyectos impulsados", icon: "fa-rocket", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/proyectos-impulsados" },
+                            { id: "2.4.2", title: "Próximas convocatorias", icon: "fa-bullhorn", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/convocatorias/fotease" },
+                            { id: "2.4.3", title: "IMP", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/imp" },
+                            { id: "2.4.4", title: "INEEL", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/ineel" },
+                            { id: "2.4.5", title: "ININ", icon: "fa-atom", url: "https://qa-ti.energia.gob.mx/snien/public/innovacion/inin" }
+                        ]
+                    },
+                    {
+                        id: "2 e)",
+                        title: "La información relevante de proyectos en desarrollo y concluidos en el país orientados a la Justicia Energética",
+                        icon: "fa-balance-scale-left",
+                        cardClass: "card-innovacion",
+                        items: [
+                            { id: "2.5.1", title: "Acceso a la electricidad", icon: "fa-plug", url: "https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/acceso-electricidad" },
+                            { id: "2.5.2", title: "Estabilización de precios", icon: "fa-chart-line", url: "https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/estabilizacion-precios" },
+                            { id: "2.5.3", title: "Estrategias y programas de justicia energética", icon: "fa-hands-helping", url: "https://qa-ti.energia.gob.mx/snien/public/justicia-energetica/estrategias-programas" }
+                        ]
+                    },
+                    {
+                        id: "d.1",
+                        title: "Diagnóstico sector hidrocarburos",
+                        icon: "fa-oil-well",
+                        cardClass: "card-hidrocarburos",
+                        items: [
+                            { id: "d.1.1", title: "Reservas", icon: "fa-database", url: "https://qa-ti.energia.gob.mx/snien/public/diagnostico-energetico/hidrocarburos/reservas" },
+                            { id: "d.1.2", title: "Producción", icon: "fa-oil-can", url: null },
+                            { id: "d.1.3", title: "Refinación", icon: "fa-flask", url: null },
+                            { id: "d.1.4", title: "Procesamiento de gas natural", icon: "fa-burn", url: null },
+                            { id: "d.1.5", title: "Importaciones", icon: "fa-ship", url: null }
+                        ]
+                    },
+                    {
+                        id: "d.2",
+                        title: "Diagnóstico sector eléctrico",
+                        icon: "fa-bolt",
+                        cardClass: "card-electrico",
+                        items: [
+                            { id: "d.2.1", title: "Participación limpias", icon: "fa-leaf", url: null },
+                            { id: "d.2.2", title: "Participación pública", icon: "fa-university", url: null },
+                            { id: "d.2.3", title: "Margen de reserva y confiabilidad", icon: "fa-shield-alt", url: null },
+                            { id: "d.2.4", title: "Generación Distribuida", icon: "fa-solar-panel", url: null }
+                        ]
+                    },
+                    {
+                        id: "d.3",
+                        title: "Diagnóstico consumo final y eficiencia energética",
+                        icon: "fa-chart-pie",
+                        cardClass: "card-balance",
+                        items: [
+                            { id: "d.3.1", title: "Agropecuario", icon: "fa-tractor", url: null },
+                            { id: "d.3.2", title: "Industrial", icon: "fa-industry", url: null },
+                            { id: "d.3.3", title: "Comercial y servicios", icon: "fa-store", url: null },
+                            { id: "d.3.4", title: "Residencial", icon: "fa-home", url: null },
+                            { id: "d.3.5", title: "Público", icon: "fa-landmark", url: null },
+                            { id: "d.3.6", title: "Transporte", icon: "fa-truck", url: null },
+                            { id: "d.3.7", title: "BIEE", icon: "fa-chart-bar", url: null }
+                        ]
+                    },
+                    {
+                        id: "d.4",
+                        title: "Diagnóstico precios de los energéticos",
+                        icon: "fa-tags",
+                        cardClass: "card-mercado",
+                        items: [
+                            { id: "d.4.1", title: "Electricidad", icon: "fa-bolt", url: null },
+                            { id: "d.4.2", title: "Gasolina", icon: "fa-gas-pump", url: null },
+                            { id: "d.4.3", title: "Diesel", icon: "fa-tint", url: null },
+                            { id: "d.4.4", title: "Gas natural", icon: "fa-fire-alt", url: null },
+                            { id: "d.4.5", title: "GLP", icon: "fa-fire", url: null }
+                        ]
+                    },
+                    {
+                        id: "d.5",
+                        title: "Diagnóstico seguimiento de planes",
+                        icon: "fa-clipboard-list",
+                        cardClass: "card-planeacion",
+                        items: [
+                            { id: "d.5.1", title: "Hidrocarburos", icon: "fa-oil-well", url: null },
+                            { id: "d.5.2", title: "Electricidad", icon: "fa-bolt", url: null },
+                            { id: "d.5.3", title: "Otros", icon: "fa-ellipsis-h", url: null }
+                        ]
+                    },
+                    {
+                        id: "d.6",
+                        title: "Diagnóstico seguimiento de proyectos",
+                        icon: "fa-tasks",
+                        cardClass: "card-innovacion",
+                        items: [
+                            { id: "d.6.1", title: "Sol del bienestar", icon: "fa-sun", url: null },
+                            { id: "d.6.2", title: "Estufas Eficientes de Leña", icon: "fa-fire", url: null }
+                        ]
+                    },
+                    {
+                        id: "d.7",
+                        title: "Diagnóstico indicadores y metas",
+                        icon: "fa-bullseye",
+                        cardClass: "card-planeacion",
+                        items: [
+                            { id: "d.7.1", title: "Estrategia", icon: "fa-chess", url: null },
+                            { id: "d.7.2", title: "Prosener", icon: "fa-file-alt", url: null },
+                            { id: "d.7.3", title: "Otros", icon: "fa-ellipsis-h", url: null }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                number: "III",
+                icon: "fa-solar-panel",
+                image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80",
+                title: "La información sobre la Generación Distribuida y en aplicaciones aisladas de la red",
+                subsections: [
+                    {
+                        id: "3.1",
+                        title: "Electricidad",
+                        icon: "fa-bolt",
+                        cardClass: "card-electrico",
+                        items: [
+                            { id: "3.1.1", title: "MEM", icon: "fa-building", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/mem" },
+                            { id: "3.1.2", title: "Tarifas del MEM", icon: "fa-network-wired", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-mem" },
+                            { id: "3.1.3", title: "Tarifas usuario finales", icon: "fa-sitemap", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/tarifas-usuarios" },
+                            { id: "3.1.4", title: "Certificados de Energías Limpias", icon: "fa-certificate", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                number: "IV",
+                icon: "fa-leaf",
+                image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80",
+                title: "La información en materia de Eficiencia Energética",
+                subsections: [
+                    {
+                        id: "4.1",
+                        title: "Eficiencia en procesos energéticos",
+                        icon: "fa-cogs",
+                        cardClass: "card-balance",
+                        items: [
+                            { id: "4.1.1", title: "Refinación", icon: "fa-flask", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/refinacion" },
+                            { id: "4.1.2", title: "Procesamiento de gas natural", icon: "fa-burn", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/procesamiento-gas" },
+                            { id: "4.1.3", title: "Generación eléctrica", icon: "fa-bolt", url: "https://qa-ti.energia.gob.mx/snien/public/balance-nacional" },
+                            { id: "4.1.4", title: "Almacenamiento", icon: "fa-warehouse", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/almacenamiento" },
+                            { id: "4.1.5", title: "Transporte y transmisión", icon: "fa-truck-moving", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/transporte-transmision" },
+                            { id: "4.1.6", title: "Distribución", icon: "fa-project-diagram", url: "https://qa-ti.energia.gob.mx/snien/public/balance-energetico/consumo-final" },
+                            { id: "4.1.7", title: "Consumo final", icon: "fa-users", url: "https://qa-ti.energia.gob.mx/snien/public/infraestructura-energetica/hidrocarburos/Distribuci%C3%B3n" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 5,
+                number: "V",
+                icon: "fa-certificate",
+                image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=600&q=80",
+                title: "La información sobre los Certificados de Energías Limpias",
+                subsections: [
+                    {
+                        id: "5.1",
+                        title: "Certificados de Energías Limpias",
+                        icon: "fa-award",
+                        cardClass: "card-certificados",
+                        items: [
+                            { id: "5.1.1", title: "Certificados de Energías Limpias", icon: "fa-award", url: "https://qa-ti.energia.gob.mx/snien/public/mercado-energetico/electricidad/certificados-energias-limpias" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 6,
+                number: "VI",
+                icon: "fa-cogs",
+                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80",
+                title: "Un catálogo de tecnologías para la generación de energía eléctrica y habilitadoras, que incluya parámetros de operación, técnicos y económicos",
+                subsections: [
+                    {
+                        id: "6.1",
+                        title: "Catálogos de tecnologías",
+                        icon: "fa-book",
+                        cardClass: "card-planeacion",
+                        items: [
+                            { id: "6.1.1", title: "Catálogos de tecnologías", icon: "fa-book", url: "https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/catalogos" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 7,
+                number: "VII",
+                icon: "fa-chart-line",
+                image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80",
+                title: "El escenario de referencia y los escenarios del Sector Energético a mediano y largo plazo, e incluir los ahorros energéticos y la mitigación de emisiones de gases de efecto invernadero asociada a ellos",
+                subsections: [
+                    {
+                        id: "7.1",
+                        title: "Escenarios de referencia y planeación",
+                        icon: "fa-route",
+                        cardClass: "card-planeacion",
+                        items: [
+                            { id: "7.1.1", title: "Escenarios de referencia y planeación", icon: "fa-route", url: "https://qa-ti.energia.gob.mx/snien/public/planeacion-energetica/escenarios" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 8,
+                number: "VIII",
+                icon: "fa-cubes",
+                image: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&q=80",
+                title: "Otros insumos internos del sector",
+                subsections: [
+                    {
+                        id: "8.1",
+                        title: "Constitución",
+                        icon: "fa-landmark",
+                        cardClass: "card-constitucion",
+                        items: [
+                            { id: "8.1.1", title: "Constitución Política de los Estados Unidos Mexicanos", icon: "fa-scroll", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf" }
+                        ]
+                    },
+                    {
+                        id: "8.2",
+                        title: "Legislación Nacional",
+                        icon: "fa-gavel",
+                        cardClass: "card-legislacion",
+                        items: [
+                            { id: "8.2.1", title: "Ley Orgánica de la Administración Pública Federal", icon: "fa-balance-scale", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LOAPF.pdf" },
+                            { id: "8.2.2", title: "Ley de Planeación", icon: "fa-clipboard-list", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LPlan.pdf" },
+                            { id: "8.2.3", title: "Ley de la Empresa Pública del Estado, Petróleos Mexicanos", icon: "fa-oil-well", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LEPEPM.pdf" },
+                            { id: "8.2.4", title: "Ley de la Empresa Pública del Estado, Comisión Federal de Electricidad", icon: "fa-bolt", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LEPECFE.pdf" },
+                            { id: "8.2.5", title: "Ley del Fondo Mexicano del Petróleo para la estabilización y el desarrollo", icon: "fa-piggy-bank", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LFMPED.pdf" },
+                            { id: "8.2.6", title: "Ley de Ingresos sobre Hidrocarburos", icon: "fa-file-invoice-dollar", url: "https://www.diputados.gob.mx/LeyesBiblio/ref/lih/LIH_ref03_18mar25.pdf" },
+                            { id: "8.2.7", title: "Ley de Planeación y Transición Energética", icon: "fa-leaf", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LPTE.pdf" },
+                            { id: "8.2.8", title: "Ley del Sector eléctrico", icon: "fa-plug", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LSE.pdf" },
+                            { id: "8.2.9", title: "Ley del Sector hidrocarburos", icon: "fa-gas-pump", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LSH.pdf" },
+                            { id: "8.2.10", title: "Ley de biocombustibles", icon: "fa-seedling", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LBio.pdf" },
+                            { id: "8.2.11", title: "Ley de geotermia", icon: "fa-mountain", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGeo.pdf" },
+                            { id: "8.2.12", title: "Ley de la Comisión Nacional de Energía", icon: "fa-building", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LCNE.pdf" },
+                            { id: "8.2.13", title: "Ley de la Agencia Nacional de Seguridad Industrial y de Protección al Medio Ambiente del Sector Hidrocarburos", icon: "fa-shield-alt", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LANSI.pdf" },
+                            { id: "8.2.14", title: "Ley de Energía para el campo", icon: "fa-tractor", url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/246.pdf" },
+                            { id: "8.2.15", title: "Reglamento de la Ley de la Empresa Pública del Estado, Petróleos Mexicanos", icon: "fa-file-alt", url: "https://sidof.segob.gob.mx/notas/docFuente/5775017" },
+                            { id: "8.2.16", title: "Reglamento de la Ley de la Empresa Pública del Estado, Comisión Federal de Electricidad", icon: "fa-file-alt", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5774837&fecha=02/12/2025#gsc.tab=0" },
+                            { id: "8.2.17", title: "Reglamento de la Ley de Ingresos sobre Hidrocarburos", icon: "fa-file-alt", url: "https://www.gob.mx/cms/uploads/attachment/file/1058002/174_Reglamento_de_la_Ley_de_Ingresos_sobre_Hidrocarburos..pdf" },
+                            { id: "8.2.18", title: "Reglamento de la Ley de Planeación y Transición Energética", icon: "fa-file-alt", url: "https://sidof.segob.gob.mx/notas/docFuente/5769157" },
+                            { id: "8.2.19", title: "Reglamento de la Ley del Sector eléctrico", icon: "fa-file-alt", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5769155&fecha=03/10/2025#gsc.tab=0" },
+                            { id: "8.2.20", title: "Reglamento de la Ley del Sector hidrocarburos", icon: "fa-file-alt", url: "https://www.gob.mx/cms/uploads/attachment/file/1058005/172_Reglamento_de_la_Ley_del_Sector_Hidrocarburos.pdf" },
+                            { id: "8.2.21", title: "Reglamento de la Ley de biocombustibles", icon: "fa-file-alt", url: "https://www.gob.mx/cms/uploads/attachment/file/1058004/176_Reglamento_de_la_Ley_de_Biocombustibles..pdf" },
+                            { id: "8.2.22", title: "Reglamento de la Ley de Geotermia", icon: "fa-file-alt", url: "https://www.diputados.gob.mx/LeyesBiblio/regley/Reg_LEG.pdf" },
+                            { id: "8.2.23", title: "Reglamento Interior de la Secretaría de Energía", icon: "fa-building-columns", url: "http://sidof.segob.gob.mx/notas/5755222" },
+                            { id: "8.2.24", title: "Reglamento Interior de la Comisión Nacional de Energía", icon: "fa-building-columns", url: "https://sidof.segob.gob.mx/notas/docFuente/5756757" },
+                            { id: "8.2.25", title: "Reglamento Interior de la Agencia Nacional de Seguridad Industrial y de Protección al Medio Ambiente del Sector Hidrocarburos", icon: "fa-building-columns", url: "https://www.diputados.gob.mx/LeyesBiblio/regla/n408.pdf" },
+                            { id: "8.2.26", title: "Política Pública de Almacenamiento Mínimo de Petrolíferos", icon: "fa-warehouse", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5581171&fecha=06/12/2019#gsc.tab=0" }
+                        ]
+                    },
+                    {
+                        id: "8.3",
+                        title: "Normas Oficiales Mexicanas",
+                        icon: "fa-file-contract",
+                        cardClass: "card-normas",
+                        items: [
+                            { id: "8.3.1", title: "NOM-001-ENER-2014 Eficiencia energética de bombas verticales tipo turbina", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/181642/NOM_001_ENER_2014.pdf" },
+                            { id: "8.3.2", title: "NOM-002-SEDE/ENER-2014 Requisitos de seguridad y eficiencia energética para transformadores de distribución", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5358207&fecha=29/08/2014#gsc.tab=0" },
+                            { id: "8.3.3", title: "NOM-003-ENER-2021 Eficiencia térmica de calentadores de agua", icon: "fa-certificate", url: "https://dof.gob.mx/2021/SENER/SENER_150921.pdf" },
+                            { id: "8.3.4", title: "NOM-004-ENER-2025 Eficiencia energética para conjunto motor-bomba y motobombas", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/9501/sener/sener.html" },
+                            { id: "8.3.5", title: "NOM-005-ENER-2016 Eficiencia energética de lavadoras de ropa electrodomésticas", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/6241/sener2a11_C/sener2a11_C.html" },
+                            { id: "8.3.6", title: "NOM-007-ENER-2014 Eficiencia energética para sistemas de alumbrado en edificios no residenciales", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/5437/sener/sener.html" },
+                            { id: "8.3.7", title: "NOM-010-ENER-2004 Eficiencia energética del conjunto motor bomba sumergible tipo pozo profundo", icon: "fa-certificate", url: "https://dof.gob.mx/nota_detalle.php?codigo=2033456&fecha=18/04/2005#gsc.tab=0" },
+                            { id: "8.3.8", title: "NOM-011-ENER-2025 Eficiencia energética en acondicionadores de aire tipo central", icon: "fa-certificate", url: "https://sidof.segob.gob.mx/notas/docFuente/5756076" },
+                            { id: "8.3.9", title: "NOM-012-ENER-2019 Eficiencia energética de unidades condensadoras y evaporadoras", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle_popup.php?codigo=5608445" },
+                            { id: "8.3.10", title: "NOM-013-ENER-2013 Eficiencia energética para sistemas de alumbrado en vialidades", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php%3Fcodigo%3D5302568%26fecha%3D14/06/2013&print=true" },
+                            { id: "8.3.11", title: "NOM-014-ENER-2025 Eficiencia energética de motores eléctricos monofásicos", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5758923&fecha=02/06/2025#gsc.tab=0" },
+                            { id: "8.3.12", title: "NOM-015-ENER-2018 Eficiencia energética de refrigeradores y congeladores electrodomésticos", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/7196/sener3a11_C/sener3a11_C.html" },
+                            { id: "8.3.13", title: "NOM-016-ENER-2025 Eficiencia energética de motores eléctricos trifásicos", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/9514/sener/sener.html" },
+                            { id: "8.3.14", title: "NOM-017-ENER/SCFI-2012 Eficiencia energética de lámparas fluorescentes compactas", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/181657/NOM_017_ENER_SCFI_2012.pdf" },
+                            { id: "8.3.15", title: "NOM-019-ENER-2009 Eficiencia térmica y eléctrica de máquinas tortilladoras", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle_popup.php?codigo=5097152" },
+                            { id: "8.3.16", title: "NOM-020-ENER-2011 Eficiencia energética en edificaciones habitacionales", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/4459/sener1.htm" },
+                            { id: "8.3.17", title: "NOM-021-ENER/SCFI-2017 Eficiencia energética en acondicionadores de aire tipo cuarto", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/6631/sener11_C/sener11_C.html" },
+                            { id: "8.3.18", title: "NOM-022-ENER/SCFI-2014 Eficiencia energética para aparatos de refrigeración comercial", icon: "fa-certificate", url: "https://dof.gob.mx/nota_detalle_popup.php?codigo=5372759" },
+                            { id: "8.3.19", title: "NOM-023-ENER-2018 Eficiencia energética en acondicionadores de aire tipo dividido", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/7221/sener11_C/sener11_C.html" },
+                            { id: "8.3.20", title: "NOM-025-ENER-2013 Eficiencia térmica de aparatos domésticos para cocción", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/181665/NOM_025_ENER_2013_DOF.pdf" },
+                            { id: "8.3.21", title: "NOM-026-ENER-2015 Eficiencia energética en acondicionadores de aire tipo Inverter", icon: "fa-certificate", url: "https://dof.gob.mx/normasOficiales/5914/sener11_C/sener11_C.html" },
+                            { id: "8.3.22", title: "NOM-027-ENER/SCFI-2018 Rendimiento térmico de calentadores de agua solares", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/7304/sener2a11_C/sener2a11_C.html" },
+                            { id: "8.3.23", title: "NOM-028-ENER-2017 Eficiencia energética de lámparas para uso general", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/7027/sener11_C/sener11_C.html" },
+                            { id: "8.3.24", title: "NOM-029-ENER-2017 Eficiencia Energética de Fuentes de Alimentación Externa", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle_popup.php?codigo=5502802" },
+                            { id: "8.3.25", title: "NOM-030-ENER-2016 Eficacia luminosa de lámparas LED", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php%3Fcodigo%3D5469188%26fecha%3D17/01/2017&print=true" },
+                            { id: "8.3.26", title: "NOM-031-ENER-2019 Eficiencia energética para luminarios LED en vialidades", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle_popup.php?codigo=5612611" },
+                            { id: "8.3.27", title: "NOM-032-ENER-2013 Límites máximos de potencia eléctrica en espera", icon: "fa-certificate", url: "https://dof.gob.mx/nota_detalle_popup.php?codigo=5330530" },
+                            { id: "8.3.28", title: "NOM-033-ENER-2019 Eficiencia energética de motores de corriente alterna", icon: "fa-certificate", url: "https://dof.gob.mx/nota_detalle_popup.php?codigo=5624457" },
+                            { id: "8.3.29", title: "NOM-036-ENER/SE-2025 Eficiencia térmica y seguridad de estufas de leña", icon: "fa-certificate", url: "https://www.dof.gob.mx/normasOficiales/9523/sener/sener.html" },
+                            { id: "8.3.30", title: "NOM-001-ASEA-2019 Criterios para clasificar Residuos de Manejo Especial del Sector Hidrocarburos", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058046/215_NOM-001-ASEA-2019.pdf" },
+                            { id: "8.3.31", title: "NOM-003-ASEA-2016 Distribución de gas natural y GLP por ductos", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058041/209_NOM-003-ASEA-2016__Distribuci_n_de_gas_natural_y_gas_licuado_de_petr_leo_por_ductos.pdf" },
+                            { id: "8.3.32", title: "NOM-004-ASEA-2017 Sistemas de recuperación de vapores de gasolinas", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058044/211_NOM-004-ASEA-2017.pdf" },
+                            { id: "8.3.33", title: "NOM-005-ASEA-2016 Estaciones de Servicio para almacenamiento de diésel y gasolinas", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058040/208_NOM-005-ASEA-2016.pdf" },
+                            { id: "8.3.34", title: "NOM-006-ASEA-2017 Instalaciones terrestres de almacenamiento de petrolíferos", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058045/213_NOM-006-ASEA-2017.pdf" },
+                            { id: "8.3.35", title: "NOM-EM-007-ASEA-2025 Distribución de Gas Licuado de Petróleo", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5769161&fecha=03/10/2025#gsc.tab=0" },
+                            { id: "8.3.36", title: "NOM-008-ASEA-2019 Estaciones de servicio para expendio de GLP", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058048/216_NOM_008_ASEAPDF.pdf" },
+                            { id: "8.3.37", title: "NOM-009-ASEA-2017 Administración de la integridad de ductos de hidrocarburos", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058047/214_NOM-009-ASEA-2017.pdf" },
+                            { id: "8.3.38", title: "NOM-010-ASEA-2016 Gas Natural Comprimido - Requisitos de seguridad", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058042/210_NOM-010-ASEA-2016.PDF" },
+                            { id: "8.3.39", title: "NOM-011-ASEA-2019 Bodegas de guarda para distribución de GLP", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058050/217_NOM_011_ASEA_.PDF" },
+                            { id: "8.3.40", title: "NOM-013-ASEA-2021 Instalaciones de Almacenamiento y Regasificación de GNL", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058049/218_NOM-013-ASEA-2021__.pdf" },
+                            { id: "8.3.41", title: "NOM-014-ASEA-2022 Especificaciones de protección ambiental para pozos de hidrocarburos", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058051/219_NOM-014-ASEA-2022.pdf" },
+                            { id: "8.3.42", title: "NOM-015-ASEA-2023 Descompresión de Gas Natural Comprimido", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058054/221_NOM-015-ASEA-2023.pdf" },
+                            { id: "8.3.43", title: "NOM-016-ASEA-2023 Especificaciones para Prospecciones Sísmicas", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058052/220_NOM-016-ASEA-2023.pdf" },
+                            { id: "8.3.44", title: "NOM-017-ASEA-2023 Instalaciones de almacenamiento de GLP", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058055/223_NOM-017-ASEA-2023.pdf" },
+                            { id: "8.3.45", title: "NOM-018-ASEA-2023 Plantas de Distribución de GLP", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058053/222_NOM-018-ASEA-2023.PDF" },
+                            { id: "8.3.46", title: "NOM-019-ASEA-2024 Instalaciones de procesamiento de gas natural", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058056/224_NOM-019-ASEA-2024.pdf" },
+                            { id: "8.3.47", title: "NOM-020-ASEA-2024 Transporte de gas natural por ductos terrestres", icon: "fa-certificate", url: "https://www.gob.mx/cms/uploads/attachment/file/1058057/225_NOM-020-ASEA-2024__.PDF" },
+                            { id: "8.3.48", title: "NOM-EM-006-ASEA-2025 Transporte de Gas Licuado de Petróleo", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5769160&fecha=03/10/2025#gsc.tab=0" },
+                            { id: "8.3.49", title: "NOM-148-SEMARNAT-2006 Recuperación de azufre de procesos de refinación", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5008090&fecha=28/11/2007#gsc.tab=0" },
+                            { id: "8.3.50", title: "NOM-213-SCFI-2018 Recipientes para contener GLP", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5574432&fecha=04/10/2019#gsc.tab=0" },
+                            { id: "8.3.51", title: "NOM-076-SEMARNAT-2012 Niveles máximos de emisión de vehículos automotores", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5279237&fecha=27/11/2012#gsc.tab=0" },
+                            { id: "8.3.52", title: "NOM-050-SEMARNAT-2018 Límites de emisión de vehículos con GLP o gas natural", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5540855&fecha=12/10/2018#gsc.tab=0" },
+                            { id: "8.3.53", title: "NOM-047-SEMARNAT-2014 Procedimiento de verificación de emisiones vehiculares", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5371998&fecha=26/11/2014#gsc.tab=0" },
+                            { id: "8.3.54", title: "NOM-042-SEMARNAT-2003 Límites de emisión de vehículos automotores nuevos", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=2091196&fecha=07/09/2005#gsc.tab=0" },
+                            { id: "8.3.55", title: "NOM-015-SECRE-2013 Sistemas de almacenamiento de GLP", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5326216&fecha=12/12/2013#gsc.tab=0" },
+                            { id: "8.3.56", title: "NOM-016-CRE-2016 Especificaciones de calidad de los petrolíferos", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5450011&fecha=29/08/2016#gsc.tab=0" },
+                            { id: "8.3.57", title: "NOM-014-CRE-2016 Especificaciones de calidad de los petroquímicos", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5460240&fecha=09/11/2016#gsc.tab=0" },
+                            { id: "8.3.58", title: "NOM-259-SE-2022 Sistemas para medición y despacho de GLP", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5731801&fecha=28/06/2024#gsc.tab=0" },
+                            { id: "8.3.59", title: "NOM-044-SEMARNAT-2017 Límites de emisión de motores diésel", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5513626&fecha=19/02/2018#gsc.tab=0" },
+                            { id: "8.3.60", title: "NOM-007-ASEA-2016 Transporte de gas natural por ductos", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5515122&fecha=05/03/2018#gsc.tab=0" },
+                            { id: "8.3.61", title: "NOM-001-SECRE-2010 Especificaciones del gas natural", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5135962&fecha=19/03/2010#gsc.tab=0" },
+                            { id: "8.3.62", title: "NOM-185-SCFI-2017 Programas informáticos para sistemas de despacho de gasolina", icon: "fa-certificate", url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5537054&fecha=06/09/2018#gsc.tab=0" }
+                        ]
+                    },
+                    {
+                        id: "8.4",
+                        title: "Planeación energética",
+                        icon: "fa-chart-line",
+                        cardClass: "card-planeacion",
+                        items: [
+                            { id: "8.4.1", title: "Instrumentos de planeación", icon: "fa-tools", url: "" },
+                            { id: "8.4.2", title: "Escenarios de referencia y planeación", icon: "fa-project-diagram", url: "" },
+                            { id: "8.4.3", title: "Catálogos de tecnologías", icon: "fa-book", url: "" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Estado de navegación
+        let currentState = {
+            level: 'sections',
+            sectionId: null,
+            subsectionId: null
+        };
+
+        // Historial
+        let navigationHistory = [];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSections();
+        });
+
+        // Renderizar secciones principales
+        function renderSections() {
+            const grid = document.getElementById('sections-grid');
+            grid.innerHTML = '';
+            grid.className = 'sections-grid';
+
+            sectionsData.forEach((section, index) => {
+                // Agregar separador antes de la sección VIII (índice 7)
+                if (section.number === 'VIII') {
+                    const separator = document.createElement('div');
+                    separator.className = 'sections-separator';
+                    separator.innerHTML = '<span>Información Complementaria</span>';
+                    grid.appendChild(separator);
+                }
+
+                const subsectionCount = section.subsections ? section.subsections.length : 0;
+                const card = document.createElement('div');
+                card.className = 'section-card';
+                card.onclick = () => showSubsections(section.id);
+                // Determinar si mostrar numeración (no mostrar para sección VIII en adelante)
+                const showNumber = section.number !== 'VIII';
+                const titleText = showNumber ? `<strong>${section.number}.</strong> ${section.title}` : section.title;
+
+                card.innerHTML = `
+                    <div class="section-card-header">
+                        <div class="section-card-header-content">
+                            <div class="section-card-icon">
+                                <i class="fas ${section.icon}"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-card-body">
+                        <div class="section-card-title">${titleText}</div>
+                        <div class="section-card-meta">
+                            <div class="section-card-count">
+                                <i class="fas fa-folder"></i>
+                                <span>${subsectionCount} ${subsectionCount !== 1 ? 'subsecciones' : 'subsección'}</span>
+                            </div>
+                            <div class="section-card-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Crear tarjeta de subsección
+        function createSubsectionCard(sub, sectionId) {
+            const card = document.createElement('div');
+            card.className = `subsection-card ${sub.cardClass}`;
+            card.onclick = () => showItems(sectionId, sub.id);
+            card.innerHTML = `
+                <div class="subsection-card-header">
+                    <div class="subsection-card-header-content">
+                        <div class="subsection-card-number">${sub.id}</div>
+                        <div class="subsection-card-icon">
+                            <i class="fas ${sub.icon}"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="subsection-card-body">
+                    <div class="subsection-card-title">${sub.title}</div>
+                    <div class="subsection-card-meta">
+                        <div class="subsection-card-count">
+                            <i class="fas fa-list"></i>
+                            <span>${sub.items.length} elemento${sub.items.length !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="subsection-card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Mostrar subsecciones
+        function showSubsections(sectionId) {
+            const section = sectionsData.find(s => s.id === sectionId);
+            if (!section) return;
+
+            navigationHistory.push({...currentState});
+
+            currentState = {
+                level: 'subsections',
+                sectionId: sectionId,
+                subsectionId: null
+            };
+
+            document.getElementById('subsections-title-text').textContent = section.number === 'VIII' ? section.title : `Sección ${section.number}: ${section.title.substring(0, 80)}${section.title.length > 80 ? '...' : ''}`;
+            document.getElementById('subsections-description').textContent = `${section.subsections.length} ${section.subsections.length !== 1 ? 'subsecciones disponibles' : 'subsección disponible'}`;
+
+            const grid = document.getElementById('subsections-grid');
+            const gridSecondary = document.getElementById('subsections-grid-secondary');
+            const separator = document.getElementById('subsections-separator');
+            grid.innerHTML = '';
+            gridSecondary.innerHTML = '';
+
+            // Para Sección II: separar subsecciones 2a-2e de 2.6+
+            if (sectionId === 2) {
+                grid.classList.add('section-ii-grid');
+                const mainSubs = ['2 a)', '2 b)', '2 c)', '2 d)', '2 e)'];
+                const primarySubs = section.subsections.filter(sub => mainSubs.includes(sub.id));
+                const secondarySubs = section.subsections.filter(sub => !mainSubs.includes(sub.id));
+
+                // Mostrar subsecciones principales (2a-2e) en grid ancho
+                primarySubs.forEach(sub => {
+                    grid.appendChild(createSubsectionCard(sub, sectionId));
+                });
+
+                // Mostrar subsecciones secundarias (2.6+) en grid normal
+                if (secondarySubs.length > 0) {
+                    separator.style.display = 'block';
+                    gridSecondary.style.display = 'grid';
+                    secondarySubs.forEach(sub => {
+                        gridSecondary.appendChild(createSubsectionCard(sub, sectionId));
+                    });
+                } else {
+                    separator.style.display = 'none';
+                    gridSecondary.style.display = 'none';
+                }
+            } else {
+                grid.classList.remove('section-ii-grid');
+                separator.style.display = 'none';
+                gridSecondary.style.display = 'none';
+
+                section.subsections.forEach(sub => {
+                    grid.appendChild(createSubsectionCard(sub, sectionId));
+                });
+            }
+
+            switchView('subsections');
+            updateBreadcrumb();
+            updateNavButtons();
+            scrollToTop();
+        }
+
+        // Mostrar items
+        function showItems(sectionId, subsectionId) {
+            const section = sectionsData.find(s => s.id === sectionId);
+            if (!section) return;
+
+            const subsection = section.subsections.find(s => s.id === subsectionId);
+            if (!subsection) return;
+
+            navigationHistory.push({...currentState});
+
+            currentState = {
+                level: 'items',
+                sectionId: sectionId,
+                subsectionId: subsectionId
+            };
+
+            document.getElementById('items-title-text').textContent = `${subsection.id} ${subsection.title}`;
+            document.getElementById('items-description').textContent = `${subsection.items.length} elemento${subsection.items.length !== 1 ? 's' : ''} disponible${subsection.items.length !== 1 ? 's' : ''}`;
+
+            const grid = document.getElementById('items-grid');
+            grid.innerHTML = '';
+
+            subsection.items.forEach(item => {
+                const card = document.createElement('a');
+                card.className = `item-card ${subsection.cardClass} ${!item.url ? 'item-card-disabled' : ''}`;
+                if (item.url) {
+                    card.href = item.url;
+                    card.target = '_blank';
+                }
+                card.innerHTML = `
+                    <div class="item-card-image">
+                        <i class="fas ${item.icon}"></i>
+                    </div>
+                    <div class="item-card-body">
+                        <div class="item-card-title">${item.id} ${item.title}</div>
+                        <div class="item-card-subtitle">
+                            ${item.url
+                                ? '<i class="fas fa-external-link-alt"></i> Ver información'
+                                : '<i class="fas fa-ban"></i> No disponible <span class="no-link">Sin enlace</span>'
+                            }
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            switchView('items');
+            updateBreadcrumb();
+            updateNavButtons();
+            scrollToTop();
+        }
+
+        // Cambiar vista
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`${viewName}-view`).classList.add('active');
+        }
+
+        // Actualizar breadcrumb
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            let html = `
+                <div class="nav-breadcrumb-item ${currentState.level === 'sections' ? 'active' : 'clickable'}" onclick="navigateTo('sections')">
+                    <i class="fas fa-home"></i>
+                    <span>Secciones</span>
+                </div>
+            `;
+
+            if (currentState.sectionId !== null) {
+                const section = sectionsData.find(s => s.id === currentState.sectionId);
+                if (section) {
+                    html += `
+                        <span class="nav-breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                        <div class="nav-breadcrumb-item ${currentState.level === 'subsections' ? 'active' : 'clickable'}" onclick="navigateTo('subsections')">
+                            <i class="fas ${section.icon}"></i>
+                            <span>${section.number === 'VIII' ? section.title : 'Sección ' + section.number}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            if (currentState.subsectionId !== null) {
+                const section = sectionsData.find(s => s.id === currentState.sectionId);
+                if (section) {
+                    const subsection = section.subsections.find(s => s.id === currentState.subsectionId);
+                    if (subsection) {
+                        html += `
+                            <span class="nav-breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                            <div class="nav-breadcrumb-item active">
+                                <i class="fas ${subsection.icon}"></i>
+                                <span>${subsection.id}</span>
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            breadcrumb.innerHTML = html;
+        }
+
+        // Actualizar botones
+        function updateNavButtons() {
+            document.getElementById('btnBack').disabled = navigationHistory.length === 0;
+        }
+
+        // Regresar
+        function goBack() {
+            if (navigationHistory.length === 0) return;
+
+            const previousState = navigationHistory.pop();
+            currentState = previousState;
+
+            if (currentState.level === 'sections') {
+                switchView('sections');
+            } else if (currentState.level === 'subsections') {
+                const section = sectionsData.find(s => s.id === currentState.sectionId);
+                if (section) {
+                    document.getElementById('subsections-title-text').textContent = section.number === 'VIII' ? section.title : `Sección ${section.number}: ${section.title.substring(0, 80)}${section.title.length > 80 ? '...' : ''}`;
+                    document.getElementById('subsections-description').textContent = `${section.subsections.length} ${section.subsections.length !== 1 ? 'subsecciones disponibles' : 'subsección disponible'}`;
+
+                    const grid = document.getElementById('subsections-grid');
+                    const gridSecondary = document.getElementById('subsections-grid-secondary');
+                    const separator = document.getElementById('subsections-separator');
+                    grid.innerHTML = '';
+                    gridSecondary.innerHTML = '';
+
+                    // Para Sección II: separar subsecciones 2a-2e de 2.1+
+                    if (currentState.sectionId === 2) {
+                        grid.classList.add('section-ii-grid');
+                        const mainSubs = ['2 a)', '2 b)', '2 c)', '2 d)', '2 e)'];
+                        const primarySubs = section.subsections.filter(sub => mainSubs.includes(sub.id));
+                        const secondarySubs = section.subsections.filter(sub => !mainSubs.includes(sub.id));
+
+                        primarySubs.forEach(sub => {
+                            grid.appendChild(createSubsectionCard(sub, currentState.sectionId));
+                        });
+
+                        if (secondarySubs.length > 0) {
+                            separator.style.display = 'block';
+                            gridSecondary.style.display = 'grid';
+                            secondarySubs.forEach(sub => {
+                                gridSecondary.appendChild(createSubsectionCard(sub, currentState.sectionId));
+                            });
+                        } else {
+                            separator.style.display = 'none';
+                            gridSecondary.style.display = 'none';
+                        }
+                    } else {
+                        grid.classList.remove('section-ii-grid');
+                        separator.style.display = 'none';
+                        gridSecondary.style.display = 'none';
+
+                        section.subsections.forEach(sub => {
+                            grid.appendChild(createSubsectionCard(sub, currentState.sectionId));
+                        });
+                    }
+                }
+                switchView('subsections');
+            }
+
+            updateBreadcrumb();
+            updateNavButtons();
+            scrollToTop();
+        }
+
+        // Navegar a nivel específico
+        function navigateTo(level) {
+            if (level === currentState.level) return;
+
+            if (level === 'sections') {
+                navigationHistory = [];
+                currentState = { level: 'sections', sectionId: null, subsectionId: null };
+                switchView('sections');
+            } else if (level === 'subsections' && currentState.sectionId !== null) {
+                while (navigationHistory.length > 1) {
+                    navigationHistory.pop();
+                }
+                currentState.level = 'subsections';
+                currentState.subsectionId = null;
+
+                const section = sectionsData.find(s => s.id === currentState.sectionId);
+                if (section) {
+                    document.getElementById('subsections-title-text').textContent = section.number === 'VIII' ? section.title : `Sección ${section.number}: ${section.title.substring(0, 80)}${section.title.length > 80 ? '...' : ''}`;
+                    document.getElementById('subsections-description').textContent = `${section.subsections.length} ${section.subsections.length !== 1 ? 'subsecciones disponibles' : 'subsección disponible'}`;
+
+                    const grid = document.getElementById('subsections-grid');
+                    const gridSecondary = document.getElementById('subsections-grid-secondary');
+                    const separator = document.getElementById('subsections-separator');
+                    grid.innerHTML = '';
+                    gridSecondary.innerHTML = '';
+
+                    // Para Sección II: separar subsecciones 2a-2e de 2.1+
+                    if (currentState.sectionId === 2) {
+                        grid.classList.add('section-ii-grid');
+                        const mainSubs = ['2 a)', '2 b)', '2 c)', '2 d)', '2 e)'];
+                        const primarySubs = section.subsections.filter(sub => mainSubs.includes(sub.id));
+                        const secondarySubs = section.subsections.filter(sub => !mainSubs.includes(sub.id));
+
+                        primarySubs.forEach(sub => {
+                            grid.appendChild(createSubsectionCard(sub, currentState.sectionId));
+                        });
+
+                        if (secondarySubs.length > 0) {
+                            separator.style.display = 'block';
+                            gridSecondary.style.display = 'grid';
+                            secondarySubs.forEach(sub => {
+                                gridSecondary.appendChild(createSubsectionCard(sub, currentState.sectionId));
+                            });
+                        } else {
+                            separator.style.display = 'none';
+                            gridSecondary.style.display = 'none';
+                        }
+                    } else {
+                        grid.classList.remove('section-ii-grid');
+                        separator.style.display = 'none';
+                        gridSecondary.style.display = 'none';
+
+                        section.subsections.forEach(sub => {
+                            grid.appendChild(createSubsectionCard(sub, currentState.sectionId));
+                        });
+                    }
+                }
+                switchView('subsections');
+            }
+
+            updateBreadcrumb();
+            updateNavButtons();
+            scrollToTop();
+        }
+
+        // Scroll al inicio del contenido (comienza en Secciones, sin mostrar Artículo 69)
+        function scrollToTop() {
+            const navBar = document.querySelector('.nav-bar');
+            if (navBar) {
+                const offsetTop = navBar.getBoundingClientRect().top + window.pageYOffset - 10;
+                window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Tecla Escape para regresar
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+    </script>
+</body>
+</html>

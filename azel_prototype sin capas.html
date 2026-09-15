@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZEL — Atlas de Zonificación de Energías Limpias</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --guinda:#621333;
+    --guinda-light:#9C2348;
+    --oro:#A57F2C;
+    --oro-light:#E6D194;
+    --verde:#002F2A;
+    --verde-light:#1E5B4F;
+    --gris:#6B6B6B;
+    --fondo-claro:#F2EAEE;
+    --panel-bg:#ffffff;
+    --border:#E3D7DD;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;font-family:'Noto Sans',sans-serif;color:#2A1620;background:var(--fondo-claro);}
+  h1,h2,h3,h4{font-family:'Noto Serif',serif;margin:0;}
+  .app{display:flex;flex-direction:column;height:100vh;min-height:640px;}
+
+  /* Header */
+  .topbar{
+    background:linear-gradient(135deg,var(--guinda) 0%, var(--guinda-light) 100%);
+    color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 2px 8px rgba(98,19,51,0.25);z-index:20;position:relative;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .mark{
+    width:38px;height:38px;border-radius:9px;background:var(--oro-light);
+    display:flex;align-items:center;justify-content:center;color:var(--guinda);font-weight:700;font-family:'Noto Serif',serif;font-size:16px;
+    flex-shrink:0;
+  }
+  .brand h1{font-size:19px;letter-spacing:0.3px;}
+  .brand p{margin:2px 0 0;font-size:11.5px;color:var(--oro-light);font-weight:500;letter-spacing:.3px;}
+  .topbar .tag{font-size:11px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.35);padding:5px 10px;border-radius:20px;letter-spacing:.4px;}
+
+  /* Layout */
+  .body{flex:1;display:flex;min-height:0;}
+  .sidebar{
+    width:290px;flex-shrink:0;background:var(--panel-bg);border-right:1px solid var(--border);
+    overflow-y:auto;padding:16px 14px 30px;
+  }
+  .sidebar h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--guinda);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--fondo-claro);}
+  .layer-group{margin-bottom:6px;}
+  .layer-cat{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--gris);margin:14px 0 6px;font-weight:600;}
+  .layer-item{
+    display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;
+    font-size:13px;margin-bottom:2px;transition:background .15s;
+  }
+  .layer-item:hover{background:var(--fondo-claro);}
+  .layer-item.active{background:var(--fondo-claro);font-weight:600;color:var(--guinda);}
+  .layer-item input{accent-color:var(--guinda);}
+  .swatch{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+
+  .scenario-select{margin:6px 0 4px 26px;}
+  .scenario-select select{width:calc(100% - 26px);font-size:12px;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:#fff;}
+
+  .opacity-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--fondo-claro);}
+  .opacity-block label{font-size:12px;color:var(--gris);display:flex;justify-content:space-between;margin-bottom:6px;}
+  input[type=range]{width:100%;accent-color:var(--oro);}
+
+  .kml-block{margin-top:18px;padding-top:14px;border-top:1px solid var(--fondo-claro);}
+  .kml-block input[type=text]{width:100%;padding:6px 8px;font-size:12.5px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;}
+  .file-btn{
+    display:inline-block;width:100%;text-align:center;padding:7px 8px;font-size:12.5px;border-radius:7px;
+    background:var(--fondo-claro);color:var(--guinda);border:1px dashed var(--guinda-light);cursor:pointer;font-weight:600;
+  }
+  .file-btn input{display:none;}
+  .mini-note{font-size:10.5px;color:var(--gris);margin-top:5px;line-height:1.4;}
+
+  .coord-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--fondo-claro);}
+  .coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+  .coord-grid input{padding:5px 6px;font-size:11.5px;border:1px solid var(--border);border-radius:6px;}
+  .btn{
+    border:none;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;
+    transition:filter .15s; width:100%;
+  }
+  .btn-primary{background:var(--guinda);color:#fff;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-secondary{background:#fff;color:var(--guinda);border:1px solid var(--guinda-light);margin-top:6px;}
+  .btn-row{display:flex;gap:6px;}
+  .btn-row .btn{width:auto;flex:1;}
+
+  /* Map area */
+  .map-wrap{flex:1;position:relative;min-width:0;}
+  #map{position:absolute;inset:0;background:#dfe7e5;}
+
+  .search-overlay{
+    position:absolute;top:14px;left:14px;right:14px;z-index:500;display:flex;justify-content:space-between;gap:12px;
+    pointer-events:none;
+  }
+  .search-box{
+    pointer-events:auto;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);
+    padding:9px 12px;display:flex;align-items:center;gap:8px;width:340px;max-width:60vw;
+  }
+  .search-box input{border:none;outline:none;font-size:13.5px;flex:1;font-family:'Noto Sans',sans-serif;}
+  .search-box .icon{color:var(--gris);font-size:14px;}
+  .search-hint{font-size:10px;color:var(--gris);margin-top:4px;padding-left:2px;}
+
+  .summary-card{
+    pointer-events:auto;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);
+    padding:10px 16px;display:flex;align-items:center;gap:12px;min-width:210px;
+  }
+  .summary-card .ic{
+    width:36px;height:36px;border-radius:9px;background:var(--fondo-claro);display:flex;align-items:center;
+    justify-content:center;font-size:17px;flex-shrink:0;
+  }
+  .summary-card .num{font-family:'Noto Serif',serif;font-size:19px;color:var(--guinda);font-weight:700;line-height:1;}
+  .summary-card .lbl{font-size:10.5px;color:var(--gris);margin-top:2px;}
+
+  .map-controls{
+    position:absolute;bottom:18px;right:14px;z-index:500;display:flex;flex-direction:column;gap:8px;
+  }
+  .ctrl-btn{
+    width:36px;height:36px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.18);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--guinda);
+    border:none;
+  }
+  .ctrl-btn:hover{background:var(--fondo-claro);}
+
+  .basemap-switch{
+    position:absolute;bottom:18px;left:14px;z-index:500;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.18);
+    display:flex;overflow:hidden;
+  }
+  .basemap-switch button{
+    border:none;background:#fff;padding:7px 11px;font-size:11px;cursor:pointer;color:var(--gris);font-weight:600;
+  }
+  .basemap-switch button.active{background:var(--guinda);color:#fff;}
+
+  .legend-box{
+    position:absolute;bottom:66px;left:14px;z-index:500;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.18);
+    padding:10px 12px;font-size:11.5px;min-width:170px;display:none;
+  }
+  .legend-box.show{display:block;}
+  .legend-title{font-weight:700;color:var(--guinda);margin-bottom:6px;font-size:11.5px;}
+  .legend-row{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+  .legend-row .sw{width:14px;height:10px;border-radius:2px;flex-shrink:0;}
+
+  .distance-tip{
+    position:absolute;top:70px;left:14px;z-index:500;background:rgba(0,47,42,0.92);color:#fff;padding:6px 10px;border-radius:7px;font-size:11.5px;display:none;
+  }
+  .distance-tip.show{display:block;}
+
+  /* Bottom section */
+  .bottom-panel{
+    height:230px;flex-shrink:0;border-top:1px solid var(--border);background:#fff;display:flex;overflow:hidden;
+  }
+  .chart-block{flex:1.3;padding:14px 18px;border-right:1px solid var(--border);display:flex;flex-direction:column;min-width:0;}
+  .chart-block h3{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--guinda);margin-bottom:10px;}
+  .chart-area{flex:1;position:relative;}
+  .chart-empty{color:var(--gris);font-size:12.5px;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:0 30px;}
+
+  .download-block{flex:1;padding:14px 18px;overflow-y:auto;}
+  .download-block h3{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--guinda);margin-bottom:10px;}
+  .dl-row{
+    display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--fondo-claro);font-size:12.5px;
+  }
+  .dl-row:last-child{border-bottom:none;}
+  .dl-btn{
+    font-size:10.5px;padding:4px 9px;border-radius:6px;background:var(--fondo-claro);color:var(--guinda);border:none;font-weight:700;cursor:pointer;
+  }
+  .dl-btn:hover{background:var(--oro-light);}
+
+  /* Popup styling */
+  .leaflet-popup-content-wrapper{border-radius:10px;}
+  .proj-popup h4{font-size:13.5px;color:var(--guinda);margin-bottom:6px;}
+  .proj-popup table{font-size:11.5px;border-collapse:collapse;}
+  .proj-popup td{padding:1.5px 0;vertical-align:top;}
+  .proj-popup td.k{color:var(--gris);padding-right:8px;white-space:nowrap;}
+  .proj-popup a{color:var(--guinda-light);font-weight:600;}
+  .proj-popup .status{display:inline-block;padding:1px 7px;border-radius:20px;background:var(--verde-light);color:#fff;font-size:10px;margin-top:4px;}
+
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--verde);color:#fff;
+    padding:10px 18px;border-radius:8px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    z-index:2000;opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+
+  ::-webkit-scrollbar{width:7px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+
+  @media (max-width:880px){
+    .sidebar{position:absolute;left:0;top:0;bottom:0;z-index:900;transform:translateX(-100%);transition:transform .2s;box-shadow:4px 0 14px rgba(0,0,0,0.2);}
+    .sidebar.open{transform:translateX(0);}
+    .bottom-panel{flex-direction:column;height:340px;}
+    .chart-block{border-right:none;border-bottom:1px solid var(--border);}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">AZ</div>
+      <div>
+        <h1>AZEL — Atlas de Zonificación de Energías Limpias</h1>
+        <p>SENER · SPTE · SNIEr</p>
+      </div>
+    </div>
+    <div class="tag" id="statusTag">Capa activa: Solar Fotovoltaica</div>
+  </div>
+
+  <div class="body">
+
+    <div class="sidebar" id="sidebar">
+      <h3>Capas de información</h3>
+      <div id="layerList"></div>
+
+      <div class="opacity-block">
+        <label>Opacidad de la capa activa <span id="opacityVal">75%</span></label>
+        <input type="range" id="opacitySlider" min="10" max="100" value="75">
+      </div>
+
+      <div class="kml-block">
+        <h3 style="margin-top:0;">Cargar mi proyecto</h3>
+        <input type="text" id="kmlName" placeholder="Nombre del proyecto">
+        <label class="file-btn">📂 Subir archivo KML
+          <input type="file" id="kmlInput" accept=".kml">
+        </label>
+        <div class="mini-note">Se valida geometría y formato .kml. El proyecto se ubicará en el mapa con un marcador.</div>
+      </div>
+
+      <div class="coord-block">
+        <h3 style="margin-top:0;">Definir área por coordenadas</h3>
+        <div class="coord-grid">
+          <input type="text" id="latMin" placeholder="Lat. mínima">
+          <input type="text" id="latMax" placeholder="Lat. máxima">
+          <input type="text" id="lngMin" placeholder="Lon. mínima">
+          <input type="text" id="lngMax" placeholder="Lon. máxima">
+        </div>
+        <button class="btn btn-primary" id="drawRectBtn">Trazar área</button>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="clearRectBtn">Limpiar</button>
+          <button class="btn btn-secondary" id="downloadRectBtn">Descargar KML</button>
+        </div>
+        <div class="mini-note">Límite máximo: 2,500 km². El área debe quedar dentro de una sola entidad.</div>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <div id="map"></div>
+
+      <div class="search-overlay">
+        <div>
+          <div class="search-box">
+            <span class="icon">🔎</span>
+            <input list="searchOptions" id="searchInput" placeholder="Buscar por permiso, estado o municipio…">
+          </div>
+          <div class="search-hint" id="searchHint">Búsqueda disponible por número de permiso, entidad o municipio.</div>
+          <datalist id="searchOptions"></datalist>
+        </div>
+        <div class="summary-card">
+          <div class="ic" id="summaryIcon">☀️</div>
+          <div>
+            <div class="num" id="summaryNum">128</div>
+            <div class="lbl" id="summaryLbl">Proyectos autorizados — Solar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="distance-tip" id="distanceTip">Distancia: 0 km</div>
+
+      <div class="legend-box" id="legendBox">
+        <div class="legend-title" id="legendTitle">Potencial fotovoltaico (kWh/kWp)</div>
+        <div id="legendRows"></div>
+      </div>
+
+      <div class="basemap-switch">
+        <button data-base="light" class="active">Claro</button>
+        <button data-base="standard">Estándar</button>
+        <button data-base="dark">Oscuro</button>
+        <button data-base="sat">Satelital</button>
+      </div>
+
+      <div class="map-controls">
+        <button class="ctrl-btn" id="homeBtn" title="Vista inicial">🏠</button>
+        <button class="ctrl-btn" id="locateBtn" title="Encontrarme">📍</button>
+        <button class="ctrl-btn" id="measureBtn" title="Medir distancia">📏</button>
+        <button class="ctrl-btn" id="fullscreenBtn" title="Pantalla completa">⛶</button>
+        <button class="ctrl-btn" id="exportBtn" title="Exportar mapa">🖨️</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-panel">
+    <div class="chart-block">
+      <h3>Proyectos autorizados por entidad federativa</h3>
+      <div class="chart-area" id="chartArea"></div>
+    </div>
+    <div class="download-block">
+      <h3>Descarga de capas</h3>
+      <div id="dlList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+/* ---------------------------------------------------------
+   AZEL — Prototipo funcional
+   Datos, capas y proyectos son de muestra (ilustrativos),
+   construidos a partir de la Descripción Funcional del módulo.
+--------------------------------------------------------- */
+
+const toastEl = document.getElementById('toast');
+function toast(msg, ms=2600){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>toastEl.classList.remove('show'), ms);
+}
+
+/* ---------- Definición de capas ---------- */
+const LAYER_DEFS = [
+  {cat:'Solar', id:'solar', name:'Solar Fotovoltaica', icon:'☀️', color:'#E6A817', hasPermits:true,
+    unit:'kWh/kWp', legend:[['Bajo','#FFF3C4'],['Moderado','#FFD97D'],['Bueno','#F3B23A'],['Alto','#D98A1F'],['Muy alto','#A8590F']]},
+  {cat:'Solar', id:'radiacion', name:'Radiación Horizontal', icon:'🌤️', color:'#F2B705', hasPermits:false,
+    unit:'kWh/m²', legend:[['Bajo','#FFF3C4'],['Moderado','#FFD97D'],['Bueno','#F3B23A'],['Alto','#D98A1F'],['Muy alto','#A8590F']]},
+  {cat:'Eólica', id:'eolica', name:'Eólica', icon:'💨', color:'#2E7BAE', hasPermits:true, scenarios:['10 m','50 m','100 m','150 m','200 m'],
+    unit:'m/s', legend:[['Bajo','#DCEEFB'],['Moderado','#A9D3EF'],['Bueno','#6FB3DE'],['Alto','#3C87BE'],['Muy alto','#1E5484']]},
+  {cat:'Biomasa', id:'biomasa_ind', name:'Biomasa — Industrial', icon:'🏭', color:'#4C8C4A', hasPermits:false, scenarios:['Escenario bajo','Escenario medio','Escenario alto'],
+    unit:'GWh/año', legend:[['0 – 50','#E4F1DE'],['50 – 150','#A9D39A'],['150 – 400','#6DA85A'],['400+','#3F7A2E']]},
+  {cat:'Biomasa', id:'biomasa_pec', name:'Biomasa — Pecuaria', icon:'🐄', color:'#57995A', hasPermits:false, scenarios:['Escenario bajo','Escenario medio','Escenario alto'],
+    unit:'GWh/año', legend:[['0 – 50','#E4F1DE'],['50 – 150','#A9D39A'],['150 – 400','#6DA85A'],['400+','#3F7A2E']]},
+  {cat:'Biomasa', id:'biomasa_urb', name:'Biomasa — Urbana', icon:'🏙️', color:'#6BAF63', hasPermits:false, scenarios:['Escenario bajo','Escenario medio','Escenario alto'],
+    unit:'GWh/año', legend:[['0 – 50','#E4F1DE'],['50 – 150','#A9D39A'],['150 – 400','#6DA85A'],['400+','#3F7A2E']]},
+  {cat:'Biomasa', id:'biomasa_for', name:'Biomasa — Forestal', icon:'🌲', color:'#3E8E5A', hasPermits:false, scenarios:['Escenario bajo','Escenario medio','Escenario alto'],
+    unit:'GWh/año', legend:[['0 – 50','#E4F1DE'],['50 – 150','#A9D39A'],['150 – 400','#6DA85A'],['400+','#3F7A2E']]},
+  {cat:'Geotérmica', id:'geo', name:'Geotérmica', icon:'♨️', color:'#B4453D', hasPermits:false, scenarios:['Escenario 1','Escenario 2','Escenario 3','Escenario 4'],
+    unit:'GWh/año', legend:[['Bajo','#F6D9C9'],['Moderado','#E9A98C'],['Alto','#CE6B52'],['Muy alto','#8F2E22']]},
+  {cat:'Hídrica', id:'hidrica', name:'Disponibilidad Hídrica', icon:'💧', color:'#1E6E8C', hasPermits:false,
+    unit:'balance por cuenca', legend:[['Déficit alto','#B23A48'],['Déficit','#E08E64'],['Equilibrio','#E9DFC0'],['Superávit','#6FB3DE'],['Superávit alto','#1E5484']]},
+];
+
+/* ---------- Datos de estados (proyectos autorizados por entidad, muestra) ---------- */
+const STATE_CENTERS = {
+  'Sonora':[29.1,-110.9], 'Chihuahua':[28.6,-106.1], 'Coahuila':[27.3,-102.4], 'Nuevo León':[25.7,-100.1],
+  'Tamaulipas':[24.3,-98.8], 'Baja California':[30.8,-115.3], 'Zacatecas':[23.0,-102.6], 'San Luis Potosí':[22.4,-100.6],
+  'Jalisco':[20.6,-103.6], 'Oaxaca':[17.1,-96.7], 'Yucatán':[20.9,-89.2], 'Puebla':[19.0,-98.2],
+  'Guanajuato':[21.0,-101.2], 'Durango':[24.5,-104.9], 'Veracruz':[19.4,-96.6], 'Michoacán':[19.4,-101.9]
+};
+const SOLAR_PROJECTS = {'Sonora':22,'Chihuahua':18,'Coahuila':16,'Nuevo León':9,'Zacatecas':14,'San Luis Potosí':11,'Jalisco':8,'Puebla':7,'Guanajuato':10,'Durango':6,'Yucatán':7};
+const WIND_PROJECTS   = {'Oaxaca':31,'Tamaulipas':19,'Nuevo León':8,'San Luis Potosí':6,'Baja California':9,'Coahuila':5,'Jalisco':4,'Puebla':6,'Veracruz':7,'Zacatecas':3};
+
+/* ---------- Proyectos puntuales (muestra, para popups) ---------- */
+const SAMPLE_PROJECTS = {
+  solar:[
+    {name:'Parque Solar El Mezquite', lat:29.05,lng:-110.6, empresa:'Energía Renovable del Norte S.A.P.I.', permiso:'E/1234/SOL/2022', expediente:'DGCE-0987/22', otorgamiento:'14/03/2022', operacion:'02/11/2023', mw:180, gen:'392 GWh/año', inversion:'$2,450 MDP', estatus:'Operando'},
+    {name:'Fotovoltaica Sol de Zacatecas', lat:22.9,lng:-102.4, empresa:'Grupo Solar Altiplano S.A. de C.V.', permiso:'E/0456/SOL/2021', expediente:'DGCE-0221/21', otorgamiento:'09/06/2021', operacion:'18/01/2023', mw:96, gen:'205 GWh/año', inversion:'$1,180 MDP', estatus:'Operando'},
+    {name:'Planta FV Laguna Seca', lat:27.1,lng:-102.1, empresa:'Coahuila Energía Limpia S. de R.L.', permiso:'E/0788/SOL/2023', expediente:'DGCE-1150/23', otorgamiento:'22/09/2023', operacion:'Pendiente', mw:64, gen:'138 GWh/año', inversion:'$790 MDP', estatus:'En construcción'},
+  ],
+  eolica:[
+    {name:'Eólica Istmo Verde', lat:16.8,lng:-95.0, empresa:'Vientos del Istmo S.A.P.I. de C.V.', permiso:'E/2201/EOL/2020', expediente:'DGCE-0344/20', otorgamiento:'11/02/2020', operacion:'30/08/2022', mw:220, gen:'610 GWh/año', inversion:'$3,900 MDP', estatus:'Operando'},
+    {name:'Parque Eólico Reynosa Norte', lat:26.2,lng:-98.4, empresa:'Tamaulipas Wind Power S.A. de C.V.', permiso:'E/1980/EOL/2021', expediente:'DGCE-0512/21', otorgamiento:'05/07/2021', operacion:'12/04/2023', mw:140, gen:'365 GWh/año', inversion:'$2,100 MDP', estatus:'Operando'},
+  ]
+};
+
+/* ---------- Estado de la app ---------- */
+let activeLayerId = 'solar';
+let activeOpacity = 0.75;
+let overlayLayer = null;
+let markerLayer = null;
+let stateLayer = null;
+let userLayer = L.layerGroup();
+let measureMode = false;
+let measurePts = [];
+let measureLine = null;
+
+/* ---------- Mapa base ---------- */
+const map = L.map('map', {zoomControl:false, minZoom:4, maxZoom:16}).setView([23.5,-102.5], 5.2);
+
+const basemaps = {
+  light: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; CARTO'}),
+  standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}),
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; CARTO'}),
+  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri'})
+};
+basemaps.light.addTo(map);
+let currentBase = 'light';
+
+document.querySelectorAll('.basemap-switch button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    map.removeLayer(basemaps[currentBase]);
+    currentBase = btn.dataset.base;
+    basemaps[currentBase].addTo(map);
+    document.querySelectorAll('.basemap-switch button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+userLayer.addTo(map);
+
+/* ---------- Estados de México (contornos simplificados de muestra) ---------- */
+// Rectángulos aproximados solo para demostrar interacción hover/click (prototipo).
+const demoStates = Object.keys(STATE_CENTERS).map(name=>{
+  const [lat,lng] = STATE_CENTERS[name];
+  const d = 1.1;
+  return {
+    type:'Feature',
+    properties:{name},
+    geometry:{type:'Polygon', coordinates:[[[lng-d,lat-d],[lng+d,lat-d],[lng+d,lat+d],[lng-d,lat+d],[lng-d,lat-d]]]}
+  };
+});
+
+stateLayer = L.geoJSON(demoStates, {
+  style:{color:'#9C2348', weight:1, fillColor:'#9C2348', fillOpacity:0.03, dashArray:'3,3'},
+  onEachFeature:(feature, layer)=>{
+    layer.on('mouseover', ()=> layer.setStyle({fillOpacity:0.18, weight:2}));
+    layer.on('mouseout', ()=> layer.setStyle({fillOpacity:0.03, weight:1}));
+    layer.on('click', ()=>{
+      map.flyTo(layer.getBounds().getCenter(), 7.3, {duration:0.8});
+      toast(`Municipios de ${feature.properties.name} cargados (muestra).`);
+    });
+    layer.bindTooltip(feature.properties.name, {sticky:true, className:'state-tip'});
+  }
+}).addTo(map);
+
+/* ---------- Búsqueda ---------- */
+const searchOptions = document.getElementById('searchOptions');
+function refreshSearchOptions(){
+  searchOptions.innerHTML='';
+  Object.keys(STATE_CENTERS).forEach(s=>{
+    const o=document.createElement('option'); o.value=s; searchOptions.appendChild(o);
+  });
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  if(def.hasPermits && SAMPLE_PROJECTS[def.id]){
+    SAMPLE_PROJECTS[def.id].forEach(p=>{
+      const o=document.createElement('option'); o.value=p.permiso; searchOptions.appendChild(o);
+    });
+  }
+  document.getElementById('searchHint').textContent = def.hasPermits
+    ? 'Búsqueda disponible por número de permiso, entidad o municipio.'
+    : 'Esta capa no maneja permisos: busca por entidad o municipio.';
+}
+refreshSearchOptions();
+
+document.getElementById('searchInput').addEventListener('keydown', e=>{
+  if(e.key !== 'Enter') return;
+  const q = e.target.value.trim();
+  if(!q) return;
+
+  if(STATE_CENTERS[q]){
+    const [lat,lng] = STATE_CENTERS[q];
+    map.flyTo([lat,lng], 7, {duration:0.9});
+    flashState(q);
+    return;
+  }
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  const list = SAMPLE_PROJECTS[def.id];
+  if(list){
+    const found = list.find(p=>p.permiso.toLowerCase()===q.toLowerCase());
+    if(found){ map.flyTo([found.lat,found.lng], 9, {duration:0.9}); toast(`Permiso ${found.permiso} localizado.`); return; }
+  }
+  toast('Sin coincidencias para tu búsqueda.');
+});
+
+function flashState(name){
+  stateLayer.eachLayer(layer=>{
+    if(layer.feature.properties.name===name){
+      const orig = {color:'#9C2348', fillColor:'#9C2348', fillOpacity:0.03, weight:1};
+      layer.setStyle({color:'#D22', fillColor:'#D22', fillOpacity:0.35, weight:2});
+      setTimeout(()=>layer.setStyle(orig), 1800);
+    }
+  });
+}
+
+/* ---------- Renderizar panel de capas ---------- */
+const layerList = document.getElementById('layerList');
+const cats = [...new Set(LAYER_DEFS.map(l=>l.cat))];
+cats.forEach(cat=>{
+  const catEl = document.createElement('div');
+  catEl.className='layer-cat';
+  catEl.textContent=cat;
+  layerList.appendChild(catEl);
+  LAYER_DEFS.filter(l=>l.cat===cat).forEach(def=>{
+    const row = document.createElement('div');
+    row.className='layer-item'+(def.id===activeLayerId?' active':'');
+    row.dataset.id=def.id;
+    row.innerHTML = `<input type="radio" name="layerRadio" ${def.id===activeLayerId?'checked':''}>
+      <span class="swatch" style="background:${def.color}"></span>
+      <span>${def.icon} ${def.name}</span>`;
+    row.addEventListener('click', ()=> setActiveLayer(def.id));
+    layerList.appendChild(row);
+
+    if(def.scenarios){
+      const sel = document.createElement('div');
+      sel.className='scenario-select';
+      sel.id='scenario-'+def.id;
+      sel.style.display = def.id===activeLayerId ? 'block':'none';
+      sel.innerHTML = `<select>${def.scenarios.map(s=>`<option>${s}</option>`).join('')}</select>`;
+      layerList.appendChild(sel);
+    }
+  });
+});
+
+function setActiveLayer(id){
+  activeLayerId = id;
+  document.querySelectorAll('.layer-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.id===id);
+    el.querySelector('input').checked = el.dataset.id===id;
+  });
+  document.querySelectorAll('.scenario-select').forEach(el=>{
+    el.style.display = el.id==='scenario-'+id ? 'block':'none';
+  });
+  const def = LAYER_DEFS.find(l=>l.id===id);
+  document.getElementById('statusTag').textContent = 'Capa activa: '+def.name;
+  renderOverlay();
+  renderLegend();
+  renderMarkers();
+  renderSummary();
+  renderChart();
+  refreshSearchOptions();
+}
+
+/* ---------- Overlay temático simulado (círculos de "potencial") ---------- */
+function renderOverlay(){
+  if(overlayLayer){ map.removeLayer(overlayLayer); }
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  overlayLayer = L.layerGroup();
+  const rand = mulberry32(hashCode(def.id));
+  Object.entries(STATE_CENTERS).forEach(([name,[lat,lng]])=>{
+    const intensity = rand();
+    const colorIdx = Math.floor(intensity * def.legend.length);
+    const color = def.legend[Math.min(colorIdx, def.legend.length-1)][1];
+    const r = 28000 + intensity*55000;
+    L.circle([lat+ (rand()-0.5)*0.6, lng+(rand()-0.5)*0.6], {
+      radius:r, color:color, fillColor:color, fillOpacity:activeOpacity, weight:1, opacity:activeOpacity
+    }).addTo(overlayLayer);
+  });
+  overlayLayer.addTo(map);
+}
+function hashCode(s){let h=0;for(let i=0;i<s.length;i++){h=(h<<5)-h+s.charCodeAt(i);h|=0;}return h;}
+function mulberry32(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ---------- Leyenda ---------- */
+function renderLegend(){
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  document.getElementById('legendTitle').textContent = `${def.name} (${def.unit})`;
+  const rows = document.getElementById('legendRows');
+  rows.innerHTML = def.legend.map(([label,color])=>
+    `<div class="legend-row"><span class="sw" style="background:${color}"></span>${label}</div>`
+  ).join('');
+  document.getElementById('legendBox').classList.add('show');
+}
+
+/* ---------- Marcadores de proyectos con popup ---------- */
+function renderMarkers(){
+  if(markerLayer){ map.removeLayer(markerLayer); }
+  markerLayer = L.layerGroup();
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  const list = SAMPLE_PROJECTS[def.id];
+  if(list){
+    list.forEach(p=>{
+      const icon = L.divIcon({
+        className:'', html:`<div style="width:16px;height:16px;border-radius:50%;background:${def.color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
+        iconSize:[16,16], iconAnchor:[8,8]
+      });
+      const sv = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.lat},${p.lng}`;
+      const popupHtml = `<div class="proj-popup">
+        <h4>${p.name}</h4>
+        <table>
+          <tr><td class="k">Empresa</td><td>${p.empresa}</td></tr>
+          <tr><td class="k">Permiso</td><td>${p.permiso}</td></tr>
+          <tr><td class="k">Expediente</td><td>${p.expediente}</td></tr>
+          <tr><td class="k">Otorgamiento</td><td>${p.otorgamiento}</td></tr>
+          <tr><td class="k">Inicio operación</td><td>${p.operacion}</td></tr>
+          <tr><td class="k">Capacidad</td><td>${p.mw} MW</td></tr>
+          <tr><td class="k">Gen. estimada</td><td>${p.gen}</td></tr>
+          <tr><td class="k">Inversión</td><td>${p.inversion}</td></tr>
+        </table>
+        <span class="status">${p.estatus}</span><br>
+        <a href="#" onclick="return false;">Ver detalle completo</a> · <a href="${sv}" target="_blank">Street View ↗</a>
+      </div>`;
+      L.marker([p.lat,p.lng], {icon}).bindPopup(popupHtml).addTo(markerLayer);
+    });
+  }
+  markerLayer.addTo(map);
+}
+
+/* ---------- Tarjeta resumen ---------- */
+function renderSummary(){
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  document.getElementById('summaryIcon').textContent = def.icon;
+  if(def.hasPermits){
+    const totals = def.id==='solar' ? SOLAR_PROJECTS : WIND_PROJECTS;
+    const total = Object.values(totals).reduce((a,b)=>a+b,0);
+    document.getElementById('summaryNum').textContent = total;
+    document.getElementById('summaryLbl').textContent = `Proyectos autorizados — ${def.name}`;
+  } else {
+    document.getElementById('summaryNum').textContent = '—';
+    document.getElementById('summaryLbl').textContent = `${def.name}: capa sin permisos asociados`;
+  }
+}
+
+/* ---------- Gráfica de barras (canvas simple) ---------- */
+function renderChart(){
+  const area = document.getElementById('chartArea');
+  const def = LAYER_DEFS.find(l=>l.id===activeLayerId);
+  const data = def.id==='solar' ? SOLAR_PROJECTS : (def.id==='eolica' ? WIND_PROJECTS : null);
+  area.innerHTML='';
+  if(!data){
+    area.innerHTML = `<div class="chart-empty">La gráfica de proyectos autorizados aplica para las capas Solar Fotovoltaica y Eólica.<br>Selecciona una de esas capas para visualizarla.</div>`;
+    return;
+  }
+  const canvas = document.createElement('canvas');
+  area.appendChild(canvas);
+  const dpr = window.devicePixelRatio || 1;
+  const w = area.clientWidth, h = area.clientHeight;
+  canvas.width = w*dpr; canvas.height=h*dpr; canvas.style.width=w+'px'; canvas.style.height=h+'px';
+  const ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
+
+  const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  const max = Math.max(...entries.map(e=>e[1]));
+  const padL=6, padB=34, padT=8, barGap=10;
+  const barW = (w - padL*2 - barGap*(entries.length-1)) / entries.length;
+
+  ctx.fillStyle = '#6B6B6B'; ctx.font='10px "Noto Sans"';
+  entries.forEach(([name,val],i)=>{
+    const bh = (h-padB-padT) * (val/max);
+    const x = padL + i*(barW+barGap);
+    const y = h - padB - bh;
+    ctx.fillStyle = def.color;
+    roundRect(ctx, x, y, barW, bh, 4);
+    ctx.fillStyle = '#2A1620'; ctx.font='700 11px "Noto Serif"'; ctx.textAlign='center';
+    ctx.fillText(val, x+barW/2, y-5);
+    ctx.fillStyle = '#6B6B6B'; ctx.font='9.5px "Noto Sans"';
+    const label = name.length>10 ? name.slice(0,9)+'…' : name;
+    ctx.fillText(label, x+barW/2, h-padB+13);
+  });
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath(); ctx.fill();
+}
+window.addEventListener('resize', renderChart);
+
+/* ---------- Panel de descarga de capas ---------- */
+const dlList = document.getElementById('dlList');
+LAYER_DEFS.forEach(def=>{
+  const row = document.createElement('div');
+  row.className='dl-row';
+  row.innerHTML = `<span>${def.icon} ${def.name}</span><button class="dl-btn">Descargar</button>`;
+  row.querySelector('button').addEventListener('click', ()=> toast(`Preparando descarga de "${def.name}"…`));
+  dlList.appendChild(row);
+});
+
+/* ---------- Opacidad ---------- */
+document.getElementById('opacitySlider').addEventListener('input', e=>{
+  activeOpacity = e.target.value/100;
+  document.getElementById('opacityVal').textContent = e.target.value+'%';
+  renderOverlay();
+});
+
+/* ---------- Controles del mapa ---------- */
+document.getElementById('homeBtn').addEventListener('click', ()=> map.flyTo([23.5,-102.5],5.2,{duration:0.8}));
+document.getElementById('locateBtn').addEventListener('click', ()=>{
+  toast('Solicitando ubicación…');
+  map.locate({setView:true, maxZoom:9});
+});
+map.on('locationfound', e=> L.marker(e.latlng).addTo(userLayer).bindPopup('Estás aquí').openPopup());
+map.on('locationerror', ()=> toast('No fue posible obtener tu ubicación.'));
+
+document.getElementById('fullscreenBtn').addEventListener('click', ()=>{
+  const el = document.querySelector('.map-wrap');
+  if(!document.fullscreenElement){ el.requestFullscreen?.(); } else { document.exitFullscreen?.(); }
+  setTimeout(()=>map.invalidateSize(), 250);
+});
+
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  toast('Generando exportación del mapa…', 1800);
+  setTimeout(()=> toast('Exportación lista (tamaño carta, horizontal).'), 1900);
+});
+
+/* Medición de distancias */
+document.getElementById('measureBtn').addEventListener('click', ()=>{
+  measureMode = !measureMode;
+  measurePts = [];
+  if(measureLine){ map.removeLayer(measureLine); measureLine=null; }
+  document.getElementById('distanceTip').classList.toggle('show', measureMode);
+  document.getElementById('distanceTip').textContent = 'Haz clic en el mapa para medir. Distancia: 0 km';
+  toast(measureMode ? 'Modo medición activado: haz clic para trazar puntos.' : 'Modo medición desactivado.');
+});
+map.on('click', e=>{
+  if(!measureMode) return;
+  measurePts.push(e.latlng);
+  if(measureLine) map.removeLayer(measureLine);
+  measureLine = L.polyline(measurePts, {color:'#621333', weight:3, dashArray:'6,4'}).addTo(map);
+  let dist=0;
+  for(let i=1;i<measurePts.length;i++) dist += measurePts[i-1].distanceTo(measurePts[i]);
+  document.getElementById('distanceTip').textContent = `Distancia: ${(dist/1000).toFixed(2)} km`;
+});
+
+/* ---------- Carga de KML ---------- */
+document.getElementById('kmlInput').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  const name = document.getElementById('kmlName').value.trim() || 'Mi proyecto';
+  if(!file){ return; }
+  if(!file.name.toLowerCase().endsWith('.kml')){ toast('El archivo debe tener formato .kml'); return; }
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      const xml = new DOMParser().parseFromString(ev.target.result, 'text/xml');
+      const coordsEl = xml.querySelector('coordinates');
+      if(!coordsEl) throw new Error('sin geometría');
+      const raw = coordsEl.textContent.trim().split(/\s+/)[0];
+      const [lng,lat] = raw.split(',').map(Number);
+      if(isNaN(lat)||isNaN(lng)) throw new Error('coordenadas inválidas');
+      L.marker([lat,lng], {icon:L.divIcon({className:'',html:`<div style="background:#621333;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">📌 ${name}</div>`, iconAnchor:[10,10]})})
+        .addTo(userLayer).bindPopup(`<b>${name}</b><br>Proyecto cargado por el usuario`).openPopup();
+      map.flyTo([lat,lng], 9, {duration:0.9});
+      toast(`Proyecto "${name}" ubicado en el mapa.`);
+    }catch(err){
+      toast('El archivo KML no contiene geometría válida.');
+    }
+  };
+  reader.readAsText(file);
+});
+
+/* ---------- Coordenadas manuales / rectángulo ---------- */
+let rectLayer = null;
+document.getElementById('drawRectBtn').addEventListener('click', ()=>{
+  const latMin=parseFloat(document.getElementById('latMin').value);
+  const latMax=parseFloat(document.getElementById('latMax').value);
+  const lngMin=parseFloat(document.getElementById('lngMin').value);
+  const lngMax=parseFloat(document.getElementById('lngMax').value);
+  if([latMin,latMax,lngMin,lngMax].some(isNaN)){ toast('Ingresa las cuatro coordenadas.'); return; }
+  if(latMin>=latMax || lngMin>=lngMax){ toast('Las coordenadas mínimas deben ser menores a las máximas.'); return; }
+  if(latMin< 14 || latMax>33 || lngMin<-119 || lngMax>-86){ toast('El área debe ubicarse dentro del territorio nacional.'); return; }
+
+  const kmPerDegLat = 111;
+  const kmPerDegLng = 111 * Math.cos((latMin+latMax)/2 * Math.PI/180);
+  const areaKm2 = (latMax-latMin)*kmPerDegLat * (lngMax-lngMin)*kmPerDegLng;
+  if(areaKm2 > 2500){ toast(`El área (${areaKm2.toFixed(0)} km²) excede el máximo permitido de 2,500 km².`); return; }
+
+  if(rectLayer) map.removeLayer(rectLayer);
+  rectLayer = L.rectangle([[latMin,lngMin],[latMax,lngMax]], {color:'#A57F2C', weight:2, fillColor:'#E6D194', fillOpacity:0.35}).addTo(map);
+  map.fitBounds(rectLayer.getBounds(), {padding:[40,40]});
+  toast(`Área trazada: ${areaKm2.toFixed(0)} km².`);
+});
+document.getElementById('clearRectBtn').addEventListener('click', ()=>{
+  if(rectLayer){ map.removeLayer(rectLayer); rectLayer=null; toast('Trazo eliminado.'); }
+});
+document.getElementById('downloadRectBtn').addEventListener('click', ()=>{
+  if(!rectLayer){ toast('Primero traza un área.'); return; }
+  const b = rectLayer.getBounds();
+  const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Placemark><name>Área AZEL</name><Polygon><outerBoundaryIs><LinearRing><coordinates>
+${b.getWest()},${b.getSouth()} ${b.getEast()},${b.getSouth()} ${b.getEast()},${b.getNorth()} ${b.getWest()},${b.getNorth()} ${b.getWest()},${b.getSouth()}
+</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>`;
+  const blob = new Blob([kml], {type:'application/vnd.google-earth.kml+xml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'area_azel.kml'; a.click();
+  toast('Archivo KML descargado.');
+});
+
+/* ---------- Inicialización ---------- */
+renderOverlay();
+renderLegend();
+renderMarkers();
+renderSummary();
+renderChart();
+</script>
+</body>
+</html>
