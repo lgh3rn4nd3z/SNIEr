@@ -43,6 +43,10 @@ def get_ip():
 def pladeshi_er():
     return send_file('PLADESHI_ER.html')
 
+@app.route('/PLADESHI_Explorador.html')
+def pladeshi_explorador():
+    return send_file('PLADESHI_Explorador.html')
+
 @app.route('/api/series')
 def get_series():
     try:
@@ -231,6 +235,171 @@ def get_estructura_utiles():
     except Exception as e:
         import traceback
         return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
+
+# ============================================
+# ENDPOINTS PLADESHI MVP - Explorador
+# ============================================
+
+@app.route('/recursos/<path:filename>')
+def serve_recursos(filename):
+    """Sirve archivos de la carpeta recursos"""
+    import os
+    recursos_path = os.path.join(os.path.dirname(__file__), 'recursos')
+    return send_file(os.path.join(recursos_path, filename))
+
+@app.route('/api/pladeshi-mvp/indice')
+def get_pladeshi_indice():
+    """Lista todos los objetos del índice PLADESHI"""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT IdIndice, TipoObjeto, NumeroObjeto, Nombre, TipoDato,
+                   Institucion, Responsable, Unidad, Capitulo, Apartado
+            FROM PLADESHI.PLADESHI_Indice
+            WHERE Activo = 1
+            ORDER BY Capitulo,
+                     CASE WHEN TipoObjeto = 'Figura' THEN 0 ELSE 1 END,
+                     CAST(REPLACE(NumeroObjeto, '.', '') AS INT)
+        ''')
+
+        rows = []
+        for row in cursor.fetchall():
+            rows.append({
+                'IdIndice': row[0],
+                'TipoObjeto': row[1],
+                'NumeroObjeto': row[2],
+                'Nombre': row[3],
+                'TipoDato': row[4],
+                'Institucion': row[5],
+                'Responsable': row[6],
+                'Unidad': row[7],
+                'Capitulo': row[8],
+                'Apartado': row[9]
+            })
+        conn.close()
+        return jsonify(rows)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/pladeshi-mvp/objeto/<int:id_indice>')
+def get_pladeshi_objeto(id_indice):
+    """Obtiene un objeto completo con su configuración visual"""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Obtener datos del índice
+        cursor.execute('''
+            SELECT * FROM PLADESHI.PLADESHI_Indice WHERE IdIndice = %s
+        ''', (id_indice,))
+
+        columns = [col[0] for col in cursor.description]
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({'error': 'Objeto no encontrado'}), 404
+
+        indice = {}
+        for i, col in enumerate(columns):
+            val = row[i]
+            if hasattr(val, 'isoformat'):
+                val = val.isoformat()
+            indice[col] = val
+
+        # Obtener configuración visual
+        cursor.execute('''
+            SELECT * FROM PLADESHI.PLADESHI_ConfiguracionVisual WHERE IdIndice = %s
+        ''', (id_indice,))
+
+        columns = [col[0] for col in cursor.description]
+        row = cursor.fetchone()
+        config = {}
+        if row:
+            for i, col in enumerate(columns):
+                config[col] = row[i]
+
+        conn.close()
+        return jsonify({
+            'indice': indice,
+            'configuracion': config
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/pladeshi-mvp/datos/<int:id_indice>')
+def get_pladeshi_datos(id_indice):
+    """Obtiene los datos numéricos de un objeto"""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT IdDato, Escenario, Periodicidad, PeriodoInicio, PeriodoFin,
+                   PeriodoTexto, Categoria1, Categoria2, Categoria3,
+                   ValorNumerico, Unidad, EsTotal, EsCalculado, Orden,
+                   CeldaOrigen, Observaciones
+            FROM PLADESHI.PLADESHI_Datos
+            WHERE IdIndice = %s
+            ORDER BY Orden, PeriodoInicio
+        ''', (id_indice,))
+
+        rows = []
+        for row in cursor.fetchall():
+            rows.append({
+                'IdDato': row[0],
+                'Escenario': row[1],
+                'Periodicidad': row[2],
+                'PeriodoInicio': row[3].isoformat() if row[3] else None,
+                'PeriodoFin': row[4].isoformat() if row[4] else None,
+                'PeriodoTexto': row[5],
+                'Categoria1': row[6],
+                'Categoria2': row[7],
+                'Categoria3': row[8],
+                'ValorNumerico': float(row[9]) if row[9] is not None else None,
+                'Unidad': row[10],
+                'EsTotal': row[11],
+                'EsCalculado': row[12],
+                'Orden': row[13],
+                'CeldaOrigen': row[14],
+                'Observaciones': row[15]
+            })
+        conn.close()
+        return jsonify(rows)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/pladeshi-mvp/registros/<int:id_indice>')
+def get_pladeshi_registros(id_indice):
+    """Obtiene los datos de registro de un objeto"""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT IdRegistroDato, NumeroRegistro, Atributo, ValorTexto,
+                   ValorNumerico, Unidad, Orden, CeldaOrigen, Observaciones
+            FROM PLADESHI.PLADESHI_DatosRegistro
+            WHERE IdIndice = %s
+            ORDER BY NumeroRegistro, Orden
+        ''', (id_indice,))
+
+        rows = []
+        for row in cursor.fetchall():
+            rows.append({
+                'IdRegistroDato': row[0],
+                'NumeroRegistro': row[1],
+                'Atributo': row[2],
+                'ValorTexto': row[3],
+                'ValorNumerico': float(row[4]) if row[4] is not None else None,
+                'Unidad': row[5],
+                'Orden': row[6],
+                'CeldaOrigen': row[7],
+                'Observaciones': row[8]
+            })
+        conn.close()
+        return jsonify(rows)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/dashboard')
 def get_dashboard():
