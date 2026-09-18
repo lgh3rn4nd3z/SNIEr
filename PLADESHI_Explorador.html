@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLADESHI 2026-2040 - Explorador</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --guinda: #691C32;
+            --verde: #235B4E;
+            --dorado: #BC955C;
+            --gris: #6F7271;
+            --gris-claro: #f5f5f5;
+            --blanco: #ffffff;
+            --negro: #1a1a1a;
+            --bg-principal: #ffffff;
+            --bg-secundario: #f8f8f8;
+            --texto-principal: #1a1a1a;
+            --texto-secundario: #6F7271;
+            --borde: #e0e0e0;
+        }
+
+        .dark-mode {
+            --bg-principal: #1a1a1a;
+            --bg-secundario: #2d2d2d;
+            --texto-principal: #f5f5f5;
+            --texto-secundario: #a0a0a0;
+            --borde: #404040;
+            --gris-claro: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-principal);
+            color: var(--texto-principal);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--guinda), #8B2A45);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-modo {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-modo:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Layout principal */
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        /* Panel izquierdo - Indice */
+        .panel-indice {
+            width: 350px;
+            min-width: 280px;
+            background: var(--bg-secundario);
+            border-right: 1px solid var(--borde);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .filtros {
+            padding: 15px;
+            border-bottom: 1px solid var(--borde);
+            background: var(--bg-principal);
+        }
+
+        .filtros input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--borde);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: var(--bg-secundario);
+            color: var(--texto-principal);
+            margin-bottom: 10px;
+        }
+
+        .filtros-tipo {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filtro-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--borde);
+            background: var(--bg-secundario);
+            color: var(--texto-principal);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .filtro-btn.activo {
+            background: var(--verde);
+            color: white;
+            border-color: var(--verde);
+        }
+
+        .lista-objetos {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .objeto-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-principal);
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .objeto-item:hover {
+            border-color: var(--dorado);
+        }
+
+        .objeto-item.seleccionado {
+            border-color: var(--guinda);
+            background: rgba(105, 28, 50, 0.05);
+        }
+
+        .dark-mode .objeto-item.seleccionado {
+            background: rgba(105, 28, 50, 0.2);
+        }
+
+        .objeto-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .objeto-tipo {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .objeto-tipo.Figura {
+            background: var(--verde);
+            color: white;
+        }
+
+        .objeto-tipo.Tabla {
+            background: var(--guinda);
+            color: white;
+        }
+
+        .objeto-numero {
+            font-weight: 700;
+            color: var(--texto-principal);
+        }
+
+        .objeto-icono {
+            margin-left: auto;
+            font-size: 1.2rem;
+        }
+
+        .objeto-nombre {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            line-height: 1.3;
+        }
+
+        /* Panel derecho - Contenido */
+        .panel-contenido {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .contenido-vacio {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--texto-secundario);
+            font-size: 1.1rem;
+        }
+
+        .encabezado-objeto {
+            padding: 20px;
+            border-bottom: 1px solid var(--borde);
+            background: var(--bg-secundario);
+        }
+
+        .encabezado-titulo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .encabezado-tipo-numero {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--guinda);
+        }
+
+        .dark-mode .encabezado-tipo-numero {
+            color: var(--dorado);
+        }
+
+        .encabezado-nombre {
+            font-size: 1.1rem;
+            color: var(--texto-principal);
+        }
+
+        .encabezado-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            margin-bottom: 10px;
+        }
+
+        .encabezado-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .leyenda-warning {
+            background: rgba(188, 149, 92, 0.15);
+            border-left: 4px solid var(--dorado);
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            margin-top: 10px;
+        }
+
+        /* Pestanas */
+        .pestanas {
+            display: flex;
+            border-bottom: 1px solid var(--borde);
+            background: var(--bg-principal);
+            padding: 0 20px;
+        }
+
+        .pestana {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            color: var(--texto-secundario);
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .pestana:hover {
+            color: var(--texto-principal);
+        }
+
+        .pestana.activa {
+            color: var(--guinda);
+            border-bottom-color: var(--guinda);
+            font-weight: 600;
+        }
+
+        .dark-mode .pestana.activa {
+            color: var(--dorado);
+            border-bottom-color: var(--dorado);
+        }
+
+        /* Area de contenido */
+        .area-contenido {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.activo {
+            display: block;
+        }
+
+        /* Graficas */
+        .grafica-container {
+            background: var(--bg-principal);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--borde);
+            max-height: 500px;
+        }
+
+        .grafica-apoyo-label {
+            background: rgba(188, 149, 92, 0.15);
+            border: 1px solid var(--dorado);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        /* Tablas */
+        .tabla-container {
+            overflow-x: auto;
+            background: var(--bg-principal);
+            border-radius: 10px;
+            border: 1px solid var(--borde);
+        }
+
+        .tabla-datos {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .tabla-datos th {
+            background: var(--verde);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+        }
+
+        .tabla-datos td {
+            padding: 10px;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .tabla-datos tr:hover {
+            background: rgba(35, 91, 78, 0.05);
+        }
+
+        .tabla-datos .fila-total {
+            background: rgba(188, 149, 92, 0.15);
+            font-weight: 600;
+        }
+
+        .tabla-datos .valor-calculado {
+            font-style: italic;
+        }
+
+        .tabla-datos .valor-nulo {
+            color: var(--texto-secundario);
+        }
+
+        .tabla-datos td[title] {
+            cursor: help;
+        }
+
+        /* Imagen/Mapa */
+        .imagen-container {
+            text-align: center;
+        }
+
+        .imagen-mapa {
+            max-width: 100%;
+            max-height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            cursor: zoom-in;
+        }
+
+        .imagen-fuente {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .imagen-fuente a {
+            color: var(--verde);
+        }
+
+        .btn-ampliar {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--verde);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Trazabilidad */
+        .trazabilidad-ficha {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ficha-item {
+            background: var(--bg-secundario);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--verde);
+        }
+
+        .ficha-label {
+            font-size: 0.75rem;
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .ficha-valor {
+            font-size: 0.95rem;
+            color: var(--texto-principal);
+        }
+
+        .ficha-valor.sin-dato {
+            font-style: italic;
+            color: var(--texto-secundario);
+        }
+
+        /* Modal imagen */
+        .modal-imagen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-imagen.visible {
+            display: flex;
+        }
+
+        .modal-imagen img {
+            max-width: 95%;
+            max-height: 95%;
+        }
+
+        .modal-cerrar {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Selector de unidad */
+        .selector-unidad {
+            margin-bottom: 15px;
+        }
+
+        .selector-unidad label {
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+
+        .selector-unidad select {
+            padding: 8px 12px;
+            border: 1px solid var(--borde);
+            border-radius: 5px;
+            background: var(--bg-secundario);
+            color: var(--texto-principal);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .panel-indice {
+                width: 100%;
+                height: 40vh;
+            }
+
+            .panel-contenido {
+                height: 60vh;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--texto-secundario);
+        }
+
+        .loading::after {
+            content: '';
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--borde);
+            border-top-color: var(--guinda);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>PLADESHi 2026-2040 - Explorador de Objetos</h1>
+        <div class="header-controls">
+            <button class="btn-modo" onclick="toggleModoOscuro()">Modo Oscuro</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Panel Izquierdo: Indice -->
+        <aside class="panel-indice">
+            <div class="filtros">
+                <input type="text" id="busqueda" placeholder="Buscar por numero o nombre...">
+                <div class="filtros-tipo">
+                    <button class="filtro-btn activo" data-tipo="todos">Todos</button>
+                    <button class="filtro-btn" data-tipo="Figura">Figuras</button>
+                    <button class="filtro-btn" data-tipo="Tabla">Tablas</button>
+                </div>
+            </div>
+            <div class="lista-objetos" id="listaObjetos">
+                <div class="loading">Cargando indice</div>
+            </div>
+        </aside>
+
+        <!-- Panel Derecho: Contenido -->
+        <main class="panel-contenido" id="panelContenido">
+            <div class="contenido-vacio">
+                Selecciona un objeto del indice para ver su contenido
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para imagen ampliada -->
+    <div class="modal-imagen" id="modalImagen" onclick="cerrarModal()">
+        <span class="modal-cerrar">&times;</span>
+        <img id="imagenAmpliada" src="" alt="">
+    </div>
+
+    <script>
+        // Configuracion
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000'
+            : 'https://web-production-93050.up.railway.app';
+
+        // Estado global
+        let indiceObjetos = [];
+        let objetoActual = null;
+        let datosActuales = [];
+        let registrosActuales = [];
+        let chartInstance = null;
+
+        // Paleta de colores institucional para graficas
+        const COLORES = [
+            '#691C32', '#235B4E', '#BC955C', '#6F7271',
+            '#8B2A45', '#2E7566', '#D4A96A', '#888888',
+            '#A13D55', '#3A8F7D', '#E0BD85', '#9A9A9A'
+        ];
+
+        // Formato de numeros es-MX
+        const formatoNumero = new Intl.NumberFormat('es-MX', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+
+        function formatearValor(valor, unidad) {
+            if (valor === null || valor === undefined) return '-';
+            if (unidad === 'Fraccion' || unidad === 'Fracción') {
+                return (valor * 100).toFixed(2) + '%';
+            }
+            return formatoNumero.format(valor);
+        }
+
+        // Inicializacion
+        document.addEventListener('DOMContentLoaded', async () => {
+            await cargarIndice();
+            configurarFiltros();
+        });
+
+        async function cargarIndice() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/pladeshi-mvp/indice`);
+                indiceObjetos = await response.json();
+                renderizarIndice(indiceObjetos);
+            } catch (error) {
+                console.error('Error cargando indice:', error);
+                document.getElementById('listaObjetos').innerHTML =
+                    '<div style="padding: 20px; color: red;">Error al cargar el indice</div>';
+            }
+        }
+
+        function getIconoTipoDato(tipoDato) {
+            switch (tipoDato) {
+                case 'Numérico': return '📊';
+                case 'Registro': return '📋';
+                case 'Imagen': return '🗺️';
+                default: return '📄';
+            }
+        }
+
+        function renderizarIndice(objetos) {
+            const lista = document.getElementById('listaObjetos');
+            if (objetos.length === 0) {
+                lista.innerHTML = '<div style="padding: 20px; text-align: center;">No se encontraron objetos</div>';
+                return;
+            }
+
+            lista.innerHTML = objetos.map(obj => `
+                <div class="objeto-item" data-id="${obj.IdIndice}" onclick="seleccionarObjeto(${obj.IdIndice})">
+                    <div class="objeto-header">
+                        <span class="objeto-tipo ${obj.TipoObjeto}">${obj.TipoObjeto}</span>
+                        <span class="objeto-numero">${obj.NumeroObjeto}</span>
+                        <span class="objeto-icono">${getIconoTipoDato(obj.TipoDato)}</span>
+                    </div>
+                    <div class="objeto-nombre">${obj.Nombre}</div>
+                </div>
+            `).join('');
+        }
+
+        function configurarFiltros() {
+            // Busqueda
+            document.getElementById('busqueda').addEventListener('input', (e) => {
+                filtrarObjetos();
+            });
+
+            // Filtros de tipo
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+                    btn.classList.add('activo');
+                    filtrarObjetos();
+                });
+            });
+        }
+
+        function filtrarObjetos() {
+            const busqueda = document.getElementById('busqueda').value.toLowerCase();
+            const tipoActivo = document.querySelector('.filtro-btn.activo').dataset.tipo;
+
+            const filtrados = indiceObjetos.filter(obj => {
+                const coincideBusqueda = obj.NumeroObjeto.toLowerCase().includes(busqueda) ||
+                                         obj.Nombre.toLowerCase().includes(busqueda);
+                const coincideTipo = tipoActivo === 'todos' || obj.TipoObjeto === tipoActivo;
+                return coincideBusqueda && coincideTipo;
+            });
+
+            renderizarIndice(filtrados);
+        }
+
+        async function seleccionarObjeto(idIndice) {
+            // Marcar como seleccionado
+            document.querySelectorAll('.objeto-item').forEach(item => {
+                item.classList.remove('seleccionado');
+                if (parseInt(item.dataset.id) === idIndice) {
+                    item.classList.add('seleccionado');
+                }
+            });
+
+            // Mostrar loading
+            const panel = document.getElementById('panelContenido');
+            panel.innerHTML = '<div class="loading">Cargando objeto</div>';
+
+            try {
+                // Cargar datos del objeto
+                const [objetoRes, datosRes, registrosRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/pladeshi-mvp/objeto/${idIndice}`),
+                    fetch(`${API_BASE_URL}/api/pladeshi-mvp/datos/${idIndice}`),
+                    fetch(`${API_BASE_URL}/api/pladeshi-mvp/registros/${idIndice}`)
+                ]);
+
+                objetoActual = await objetoRes.json();
+                datosActuales = await datosRes.json();
+                registrosActuales = await registrosRes.json();
+
+                renderizarObjeto();
+            } catch (error) {
+                console.error('Error cargando objeto:', error);
+                panel.innerHTML = '<div style="padding: 40px; color: red;">Error al cargar el objeto</div>';
+            }
+        }
+
+        function renderizarObjeto() {
+            const { indice, configuracion } = objetoActual;
+            const panel = document.getElementById('panelContenido');
+
+            // Determinar pestanas segun tipo
+            let pestanas = [];
+            const tipoDato = indice.TipoDato;
+            const tipoObjeto = indice.TipoObjeto;
+
+            if (tipoDato === 'Imagen') {
+                pestanas = ['Mapa', 'Trazabilidad'];
+            } else if (tipoDato === 'Registro') {
+                pestanas = ['Tabla', 'Trazabilidad'];
+            } else if (tipoObjeto === 'Figura') {
+                pestanas = ['Grafica', 'Tabla de datos', 'Trazabilidad'];
+            } else {
+                pestanas = ['Tabla', 'Grafica de apoyo', 'Trazabilidad'];
+            }
+
+            panel.innerHTML = `
+                <div class="encabezado-objeto">
+                    <div class="encabezado-titulo">
+                        <span class="encabezado-tipo-numero">${indice.TipoObjeto} ${indice.NumeroObjeto}</span>
+                    </div>
+                    <div class="encabezado-nombre">${indice.Nombre}</div>
+                    <div class="encabezado-meta">
+                        ${indice.Institucion ? `<span>🏛️ ${indice.Institucion}</span>` : ''}
+                        ${indice.Responsable ? `<span>👤 ${indice.Responsable}</span>` : ''}
+                        ${indice.Unidad ? `<span>📏 ${indice.Unidad}</span>` : ''}
+                    </div>
+                </div>
+
+                <div class="pestanas">
+                    ${pestanas.map((p, i) => `
+                        <button class="pestana ${i === 0 ? 'activa' : ''}"
+                                onclick="cambiarPestana(this, '${p}')">${p}</button>
+                    `).join('')}
+                </div>
+
+                <div class="area-contenido">
+                    ${pestanas.map((p, i) => `
+                        <div class="tab-content ${i === 0 ? 'activo' : ''}" id="tab-${p.replace(/\s+/g, '-')}">
+                            <div class="loading">Cargando ${p}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Renderizar contenido de la primera pestana
+            renderizarContenidoPestana(pestanas[0]);
+        }
+
+        function cambiarPestana(btn, nombre) {
+            // Actualizar pestanas activas
+            document.querySelectorAll('.pestana').forEach(p => p.classList.remove('activa'));
+            btn.classList.add('activa');
+
+            // Mostrar contenido
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('activo'));
+            const tabId = `tab-${nombre.replace(/\s+/g, '-')}`;
+            document.getElementById(tabId).classList.add('activo');
+
+            // Renderizar contenido si no esta cargado
+            renderizarContenidoPestana(nombre);
+        }
+
+        function renderizarContenidoPestana(nombre) {
+            const tabId = `tab-${nombre.replace(/\s+/g, '-')}`;
+            const container = document.getElementById(tabId);
+
+            // Si ya tiene contenido renderizado, no recargar
+            if (!container.querySelector('.loading')) return;
+
+            switch (nombre) {
+                case 'Grafica':
+                case 'Grafica de apoyo':
+                    renderizarGrafica(container, nombre === 'Grafica de apoyo');
+                    break;
+                case 'Tabla':
+                case 'Tabla de datos':
+                    renderizarTabla(container);
+                    break;
+                case 'Mapa':
+                    renderizarImagen(container);
+                    break;
+                case 'Trazabilidad':
+                    renderizarTrazabilidad(container);
+                    break;
+            }
+        }
+
+        function renderizarGrafica(container, esApoyo = false) {
+            const { indice, configuracion } = objetoActual;
+            let configSeries = {};
+
+            try {
+                if (configuracion.ConfigSeries) {
+                    configSeries = JSON.parse(configuracion.ConfigSeries);
+                }
+            } catch (e) {
+                console.error('Error parseando ConfigSeries:', e);
+            }
+
+            // Filtrar datos para grafica (excluir Rango y opcionalmente totales)
+            let datosFiltrados = datosActuales.filter(d => d.Periodicidad !== 'Rango');
+
+            if (configSeries.excluirTotales) {
+                datosFiltrados = datosFiltrados.filter(d => !d.EsTotal);
+            }
+
+            if (configSeries.excluir) {
+                datosFiltrados = datosFiltrados.filter(d =>
+                    !configSeries.excluir.includes(d.Categoria1)
+                );
+            }
+
+            // Si no hay datos, mostrar mensaje
+            if (datosFiltrados.length === 0) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center;">No hay datos numericos para graficar</div>';
+                return;
+            }
+
+            // Obtener periodos unicos ordenados
+            const periodosSet = new Set();
+            datosFiltrados.forEach(d => {
+                if (d.PeriodoTexto) periodosSet.add(d.PeriodoTexto);
+            });
+            const periodos = Array.from(periodosSet).sort((a, b) => {
+                const numA = parseInt(a) || 0;
+                const numB = parseInt(b) || 0;
+                return numA - numB;
+            });
+
+            // Determinar series
+            let serieField = configSeries.serie || 'Categoria1';
+            if (serieField === 'Escenario') {
+                serieField = 'Escenario';
+            }
+
+            const seriesSet = new Set();
+            datosFiltrados.forEach(d => {
+                if (d[serieField]) seriesSet.add(d[serieField]);
+            });
+            const series = Array.from(seriesSet);
+
+            // Construir datasets
+            const datasets = [];
+            const tipoGrafica = configSeries.tipo || 'barra';
+
+            // Verificar si hay configuracion de series multiples
+            if (configSeries.series && Array.isArray(configSeries.series)) {
+                configSeries.series.forEach((serieConfig, idx) => {
+                    const serieName = serieConfig.Categoria1 || serieConfig.Escenario;
+                    const serieData = periodos.map(periodo => {
+                        const dato = datosFiltrados.find(d =>
+                            d.PeriodoTexto === periodo &&
+                            (d.Categoria1 === serieName || d.Escenario === serieName)
+                        );
+                        return dato ? dato.ValorNumerico : null;
+                    });
+
+                    const esLinea = serieConfig.tipo === 'linea';
+                    const dataset = {
+                        label: serieName,
+                        data: serieData,
+                        backgroundColor: esLinea ? 'transparent' : COLORES[idx % COLORES.length],
+                        borderColor: COLORES[idx % COLORES.length],
+                        borderWidth: esLinea ? 3 : 1,
+                        type: esLinea ? 'line' : 'bar',
+                        fill: false,
+                        tension: 0.1,
+                        order: esLinea ? 0 : 1  // Lineas se dibujan encima
+                    };
+
+                    if (serieConfig.eje === 'secundario') {
+                        dataset.yAxisID = 'y1';
+                    }
+
+                    datasets.push(dataset);
+                });
+            } else {
+                // Configuracion simple
+                series.forEach((serie, idx) => {
+                    const serieData = periodos.map(periodo => {
+                        const dato = datosFiltrados.find(d =>
+                            d.PeriodoTexto === periodo && d[serieField] === serie
+                        );
+                        return dato ? dato.ValorNumerico : null;
+                    });
+
+                    const esLinea = tipoGrafica === 'linea';
+                    datasets.push({
+                        label: serie,
+                        data: serieData,
+                        backgroundColor: esLinea ? 'transparent' : COLORES[idx % COLORES.length],
+                        borderColor: COLORES[idx % COLORES.length],
+                        borderWidth: esLinea ? 3 : 1,
+                        type: esLinea ? 'line' : 'bar',
+                        fill: false,
+                        tension: 0.1
+                    });
+                });
+            }
+
+            // Crear HTML
+            let html = '';
+            if (esApoyo) {
+                html += '<div class="grafica-apoyo-label">Grafica de apoyo: no forma parte del documento</div>';
+            }
+            html += '<div class="grafica-container"><canvas id="chartCanvas"></canvas></div>';
+            container.innerHTML = html;
+
+            // Destruir chart anterior si existe
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Configurar Chart.js
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
+            const chartConfig = {
+                type: tipoGrafica === 'pastel' ? 'pie' : 'bar',
+                data: {
+                    labels: periodos,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: getComputedStyle(document.body).getPropertyValue('--texto-principal')
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: tipoGrafica === 'pastel' ? {} : {
+                        x: {
+                            stacked: configSeries.apilado || false,
+                            ticks: {
+                                color: getComputedStyle(document.body).getPropertyValue('--texto-secundario')
+                            },
+                            grid: {
+                                color: getComputedStyle(document.body).getPropertyValue('--borde')
+                            }
+                        },
+                        y: {
+                            stacked: configSeries.apilado || false,
+                            ticks: {
+                                color: getComputedStyle(document.body).getPropertyValue('--texto-secundario'),
+                                callback: function(value) {
+                                    return formatoNumero.format(value);
+                                }
+                            },
+                            grid: {
+                                color: getComputedStyle(document.body).getPropertyValue('--borde')
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Agregar eje secundario si es necesario
+            if (configSeries.series && configSeries.series.some(s => s.eje === 'secundario')) {
+                chartConfig.options.scales.y1 = {
+                    position: 'right',
+                    ticks: {
+                        color: getComputedStyle(document.body).getPropertyValue('--texto-secundario')
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                };
+            }
+
+            chartInstance = new Chart(ctx, chartConfig);
+        }
+
+        function renderizarTabla(container) {
+            const { indice, configuracion } = objetoActual;
+            const tipoDato = indice.TipoDato;
+
+            if (tipoDato === 'Registro') {
+                // Tabla de registro (pivotar)
+                renderizarTablaRegistro(container);
+            } else {
+                // Tabla numerica en formato ancho
+                renderizarTablaNumerica(container);
+            }
+        }
+
+        function renderizarTablaNumerica(container) {
+            const datos = datosActuales;
+            if (datos.length === 0) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center;">No hay datos</div>';
+                return;
+            }
+
+            // Obtener periodos unicos (columnas)
+            const periodosSet = new Set();
+            datos.forEach(d => {
+                if (d.PeriodoTexto) periodosSet.add(d.PeriodoTexto);
+            });
+            let periodos = Array.from(periodosSet).sort((a, b) => {
+                const numA = parseInt(a) || 0;
+                const numB = parseInt(b) || 0;
+                return numA - numB;
+            });
+
+            // Separar periodos de Rango (van al final)
+            const periodosRango = [];
+            const periodosNormales = [];
+            datos.forEach(d => {
+                if (d.Periodicidad === 'Rango' && d.PeriodoTexto) {
+                    if (!periodosRango.includes(d.PeriodoTexto)) {
+                        periodosRango.push(d.PeriodoTexto);
+                    }
+                }
+            });
+            periodos.forEach(p => {
+                if (!periodosRango.includes(p)) {
+                    periodosNormales.push(p);
+                }
+            });
+            periodos = [...periodosNormales, ...periodosRango];
+
+            // Determinar filas (combinacion de categorias que varian)
+            const filasMap = new Map();
+            datos.forEach(d => {
+                const key = [d.Escenario, d.Categoria1, d.Categoria2, d.Categoria3]
+                    .filter(x => x).join(' | ');
+                if (!filasMap.has(key)) {
+                    filasMap.set(key, {
+                        key,
+                        Escenario: d.Escenario,
+                        Categoria1: d.Categoria1,
+                        Categoria2: d.Categoria2,
+                        Categoria3: d.Categoria3,
+                        EsTotal: d.EsTotal,
+                        Orden: d.Orden,
+                        valores: {}
+                    });
+                }
+                filasMap.get(key).valores[d.PeriodoTexto] = {
+                    valor: d.ValorNumerico,
+                    esCalculado: d.EsCalculado,
+                    unidad: d.Unidad,
+                    celdaOrigen: d.CeldaOrigen
+                };
+            });
+
+            // Ordenar filas
+            let filas = Array.from(filasMap.values());
+            filas.sort((a, b) => {
+                if (a.EsTotal !== b.EsTotal) return a.EsTotal ? 1 : -1;
+                return (a.Orden || 0) - (b.Orden || 0);
+            });
+
+            // Verificar si hay multiples unidades
+            const unidades = new Set();
+            datos.forEach(d => unidades.add(d.Unidad));
+            const mostrarUnidad = unidades.size > 1;
+
+            // Construir tabla
+            let html = '<div class="tabla-container"><table class="tabla-datos">';
+
+            // Encabezados
+            html += '<thead><tr>';
+            html += '<th>Serie</th>';
+            if (mostrarUnidad) html += '<th>Unidad</th>';
+            periodos.forEach(p => {
+                html += `<th>${p}</th>`;
+            });
+            html += '</tr></thead>';
+
+            // Filas
+            html += '<tbody>';
+            filas.forEach(fila => {
+                const claseTotal = fila.EsTotal ? 'fila-total' : '';
+                html += `<tr class="${claseTotal}">`;
+
+                // Nombre de la fila
+                const nombreFila = [fila.Categoria1, fila.Categoria2, fila.Categoria3]
+                    .filter(x => x).join(' - ');
+                html += `<td>${nombreFila || fila.Escenario || 'Sin categoria'}</td>`;
+
+                // Unidad
+                if (mostrarUnidad) {
+                    const unidadFila = Object.values(fila.valores)[0]?.unidad || '';
+                    html += `<td>${unidadFila}</td>`;
+                }
+
+                // Valores
+                periodos.forEach(periodo => {
+                    const celda = fila.valores[periodo];
+                    if (celda && celda.valor !== null) {
+                        const claseCalc = celda.esCalculado ? 'valor-calculado' : '';
+                        const valorFormateado = formatearValor(celda.valor, celda.unidad);
+                        html += `<td class="${claseCalc}" title="Celda: ${celda.celdaOrigen || ''}">${valorFormateado}</td>`;
+                    } else {
+                        html += '<td class="valor-nulo">-</td>';
+                    }
+                });
+
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+
+            container.innerHTML = html;
+        }
+
+        function renderizarTablaRegistro(container) {
+            const registros = registrosActuales;
+            if (registros.length === 0) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center;">No hay registros</div>';
+                return;
+            }
+
+            // Obtener atributos unicos (columnas), ordenados
+            const atributosMap = new Map();
+            registros.forEach(r => {
+                if (!atributosMap.has(r.Atributo)) {
+                    atributosMap.set(r.Atributo, { orden: r.Orden, unidad: r.Unidad });
+                }
+            });
+            const atributos = Array.from(atributosMap.entries())
+                .sort((a, b) => a[1].orden - b[1].orden)
+                .map(a => ({ nombre: a[0], unidad: a[1].unidad }));
+
+            // Obtener numeros de registro unicos
+            const numerosRegistro = [...new Set(registros.map(r => r.NumeroRegistro))].sort((a, b) => a - b);
+
+            // Construir mapa de datos
+            const datosMap = new Map();
+            registros.forEach(r => {
+                const key = `${r.NumeroRegistro}-${r.Atributo}`;
+                datosMap.set(key, {
+                    valor: r.ValorTexto || (r.ValorNumerico !== null ? formatearValor(r.ValorNumerico, r.Unidad) : '-'),
+                    celdaOrigen: r.CeldaOrigen
+                });
+            });
+
+            // Construir tabla
+            let html = '<div class="tabla-container"><table class="tabla-datos">';
+
+            // Encabezados
+            html += '<thead><tr>';
+            html += '<th>#</th>';
+            atributos.forEach(attr => {
+                const unidadLabel = attr.unidad ? `<br><small style="font-weight:normal">(${attr.unidad})</small>` : '';
+                html += `<th>${attr.nombre}${unidadLabel}</th>`;
+            });
+            html += '</tr></thead>';
+
+            // Filas
+            html += '<tbody>';
+            numerosRegistro.forEach(numReg => {
+                html += '<tr>';
+                html += `<td>${numReg}</td>`;
+                atributos.forEach(attr => {
+                    const key = `${numReg}-${attr.nombre}`;
+                    const celda = datosMap.get(key);
+                    if (celda) {
+                        html += `<td title="Celda: ${celda.celdaOrigen}">${celda.valor}</td>`;
+                    } else {
+                        html += '<td class="valor-nulo">-</td>';
+                    }
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+
+            container.innerHTML = html;
+        }
+
+        function renderizarImagen(container) {
+            const { configuracion } = objetoActual;
+            const rutaRecurso = configuracion.RutaRecurso;
+            const urlFuente = configuracion.UrlFuente;
+
+            if (!rutaRecurso) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center;">No hay imagen disponible</div>';
+                return;
+            }
+
+            let html = '<div class="imagen-container">';
+            html += `<img src="${API_BASE_URL}/${rutaRecurso}" alt="Mapa"
+                         class="imagen-mapa" onclick="ampliarImagen('${API_BASE_URL}/${rutaRecurso}')">`;
+
+            if (urlFuente) {
+                html += `<div class="imagen-fuente">Fuente: <a href="${urlFuente}" target="_blank">${urlFuente}</a></div>`;
+            }
+
+            html += '<button class="btn-ampliar" onclick="ampliarImagen(\'' + API_BASE_URL + '/' + rutaRecurso + '\')">Ver a tamano completo</button>';
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        function renderizarTrazabilidad(container) {
+            const { indice } = objetoActual;
+
+            // Campos de la ficha
+            const campos = [
+                { key: 'TipoObjeto', label: 'Tipo de objeto' },
+                { key: 'NumeroObjeto', label: 'Numero' },
+                { key: 'Nombre', label: 'Nombre' },
+                { key: 'TituloEnHoja', label: 'Titulo en hoja' },
+                { key: 'HojaOrigen', label: 'Hoja de origen' },
+                { key: 'Capitulo', label: 'Capitulo' },
+                { key: 'Apartado', label: 'Apartado' },
+                { key: 'Edicion', label: 'Edicion' },
+                { key: 'Institucion', label: 'Institucion' },
+                { key: 'Responsable', label: 'Responsable' },
+                { key: 'AreaTecnica', label: 'Area tecnica' },
+                { key: 'Dominio', label: 'Dominio' },
+                { key: 'TipoDato', label: 'Tipo de dato' },
+                { key: 'OrigenDatos', label: 'Origen de datos' },
+                { key: 'Unidad', label: 'Unidad' },
+                { key: 'Fuente', label: 'Fuente' },
+                { key: 'Descripcion', label: 'Descripcion' },
+                { key: 'FechaCorte', label: 'Fecha de corte' },
+                { key: 'Nota', label: 'Nota' },
+                { key: 'EstadoCarga', label: 'Estado de carga' }
+            ];
+
+            let html = '<h3 style="margin-bottom: 20px;">Ficha del objeto</h3>';
+            html += '<div class="trazabilidad-ficha">';
+            campos.forEach(campo => {
+                const valor = indice[campo.key];
+                const valorStr = valor !== null && valor !== undefined && valor !== '' ?
+                    valor : '<span class="sin-dato">Sin dato en origen</span>';
+                html += `
+                    <div class="ficha-item">
+                        <div class="ficha-label">${campo.label}</div>
+                        <div class="ficha-valor">${valorStr}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            // Lista de registros
+            html += '<h3 style="margin: 30px 0 20px;">Registros del objeto</h3>';
+
+            const tipoRegistro = indice.TipoDato === 'Registro' ? 'registro' : 'dato';
+            const registros = tipoRegistro === 'registro' ? registrosActuales : datosActuales;
+
+            if (registros.length === 0) {
+                html += '<div style="padding: 20px; text-align: center;">No hay registros</div>';
+            } else {
+                html += '<div class="tabla-container"><table class="tabla-datos">';
+                html += '<thead><tr>';
+
+                if (tipoRegistro === 'registro') {
+                    html += '<th>#</th><th>Atributo</th><th>Valor</th><th>Unidad</th><th>Celda origen</th><th>Observaciones</th>';
+                } else {
+                    html += '<th>Periodo</th><th>Escenario</th><th>Categoria 1</th><th>Categoria 2</th><th>Valor</th><th>Unidad</th><th>Es Total</th><th>Calculado</th><th>Celda origen</th><th>Observaciones</th>';
+                }
+
+                html += '</tr></thead><tbody>';
+
+                registros.forEach(r => {
+                    html += '<tr>';
+                    if (tipoRegistro === 'registro') {
+                        html += `<td>${r.NumeroRegistro}</td>`;
+                        html += `<td>${r.Atributo}</td>`;
+                        html += `<td>${r.ValorTexto || (r.ValorNumerico !== null ? formatearValor(r.ValorNumerico, r.Unidad) : '-')}</td>`;
+                        html += `<td>${r.Unidad || '-'}</td>`;
+                        html += `<td>${r.CeldaOrigen}</td>`;
+                        html += `<td>${r.Observaciones || '-'}</td>`;
+                    } else {
+                        html += `<td>${r.PeriodoTexto || '-'}</td>`;
+                        html += `<td>${r.Escenario || '-'}</td>`;
+                        html += `<td>${r.Categoria1 || '-'}</td>`;
+                        html += `<td>${r.Categoria2 || '-'}</td>`;
+                        html += `<td>${r.ValorNumerico !== null ? formatearValor(r.ValorNumerico, r.Unidad) : '-'}</td>`;
+                        html += `<td>${r.Unidad || '-'}</td>`;
+                        html += `<td>${r.EsTotal ? 'Si' : 'No'}</td>`;
+                        html += `<td>${r.EsCalculado ? 'Si' : 'No'}</td>`;
+                        html += `<td>${r.CeldaOrigen}</td>`;
+                        html += `<td>${r.Observaciones || '-'}</td>`;
+                    }
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function ampliarImagen(src) {
+            document.getElementById('imagenAmpliada').src = src;
+            document.getElementById('modalImagen').classList.add('visible');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalImagen').classList.remove('visible');
+        }
+
+        function toggleModoOscuro() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('.btn-modo');
+            btn.textContent = document.body.classList.contains('dark-mode') ? 'Modo Claro' : 'Modo Oscuro';
+
+            // Recrear grafica si existe
+            if (chartInstance && objetoActual) {
+                const container = document.querySelector('.tab-content.activo');
+                if (container && container.id.includes('Grafica')) {
+                    container.innerHTML = '<div class="loading">Actualizando</div>';
+                    setTimeout(() => {
+                        renderizarContenidoPestana(container.id.replace('tab-', '').replace(/-/g, ' '));
+                    }, 100);
+                }
+            }
+        }
+
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModal();
+        });
+    </script>
+</body>
+</html>
